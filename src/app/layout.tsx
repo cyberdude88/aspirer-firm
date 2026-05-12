@@ -45,6 +45,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} ${jetbrains.variable} ${montserrat.variable}`}>
         <div className="stage-bg" />
+        <div className="stage-glow" aria-hidden />
         <div className="slashes" aria-hidden>
           <div className="slash s1" />
           <div className="slash s2" />

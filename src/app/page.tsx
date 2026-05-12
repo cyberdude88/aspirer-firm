@@ -25,9 +25,7 @@ export default function Home() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-reveal" aria-hidden="true">
-          <span className="hero-signature" />
           <span className="hero-bars" />
-          <span className="hero-sheen" />
         </div>
         <div className="hero-inner">
           <span className="hero-eyebrow"><span className="dot" /><span className="mono">{FIRM.positioning.toUpperCase()}</span></span>
