@@ -16,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "aspirer-firm",
-  description: "Next.js · Supabase · Stripe · Google",
+  title: "Aspirer Firm — Digital marketing for mental & behavioral healthcare",
+  description: "We help others, help others. Aspirer Firm is a boutique digital marketing agency built for the treatment industry — SEO, PPC, branding, web, content, and LegitScript consulting.",
 };
 
 export default function RootLayout({

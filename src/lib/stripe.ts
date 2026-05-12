@@ -4,12 +4,19 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-09-30.acacia" as Stripe.LatestApiVersion,
 });
 
+// Map service slug -> Stripe Price ID. Service categories without paid
+// engagement (e.g. the free audit) are intentionally absent here; the
+// checkout route will reject any slug not present.
 export const PRICE_BY_SLUG: Record<string, string | undefined> = {
-  "stress-management": process.env.STRIPE_PRICE_STRESS_MANAGEMENT,
-  "life-coaching-session": process.env.STRIPE_PRICE_LIFE_COACHING,
-  "counseling": process.env.STRIPE_PRICE_COUNSELING,
-  "business-coaching": process.env.STRIPE_PRICE_BUSINESS_COACHING,
-  "interpersonal-relationship": process.env.STRIPE_PRICE_INTERPERSONAL,
-  "assertive-communication-skills": process.env.STRIPE_PRICE_ASSERTIVE,
-  "einfuhrungsberatung": process.env.STRIPE_PRICE_INTRO,
+  "seo": process.env.STRIPE_PRICE_SEO,
+  "ppc": process.env.STRIPE_PRICE_PPC,
+  "lead-generation": process.env.STRIPE_PRICE_LEAD_GEN,
+  "branding-design": process.env.STRIPE_PRICE_BRANDING,
+  "web-development": process.env.STRIPE_PRICE_WEB_DEV,
+  "videography": process.env.STRIPE_PRICE_VIDEO,
+  "content-marketing": process.env.STRIPE_PRICE_CONTENT,
+  "social-media": process.env.STRIPE_PRICE_SOCIAL,
+  "reputation-management": process.env.STRIPE_PRICE_REPUTATION,
+  "email-marketing": process.env.STRIPE_PRICE_EMAIL,
+  "legitscript-consulting": process.env.STRIPE_PRICE_LEGITSCRIPT,
 };
