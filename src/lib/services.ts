@@ -11,27 +11,6 @@ export const SERVICES = [
     blurb: "A 30-minute call with our team to review your current marketing footprint and identify gaps before any engagement.",
   },
   {
-    slug: "seo",
-    title: "Search Engine Optimization",
-    durationMin: 60,
-    category: "Digital Marketing",
-    blurb: "Healthcare-aware SEO: technical audit, content strategy, and link-building tuned for treatment center search intent.",
-  },
-  {
-    slug: "ppc",
-    title: "Pay Per Click Advertising",
-    durationMin: 60,
-    category: "Digital Marketing",
-    blurb: "LegitScript-compliant paid search and social campaigns built for the addiction and behavioral-health space.",
-  },
-  {
-    slug: "lead-generation",
-    title: "Lead Generation",
-    durationMin: 60,
-    category: "Digital Marketing",
-    blurb: "Inbound funnels designed to fill beds responsibly — qualified inquiries, not vanity volume.",
-  },
-  {
     slug: "branding-design",
     title: "Branding & Design",
     durationMin: 60,
