@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Aspirer Firm — Life Coaching",
-  description: "Personal growth and success coaching. Book sessions online.",
+  title: "aspirer-firm",
+  description: "Next.js · Supabase · Stripe · Google",
 };
 
 export default function RootLayout({
@@ -25,10 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black`}>
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

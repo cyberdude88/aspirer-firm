@@ -1,24 +1,25 @@
-import Link from "next/link";
+import { Container } from "@/components/Container";
+import { CardGrid, type CardItem } from "@/components/CardGrid";
 import { SERVICES } from "@/lib/services";
+
+const items: CardItem[] = SERVICES.map(s => ({
+  href: `/booking/${s.slug}`,
+  title: s.title,
+  description: s.blurb,
+  meta: `${s.durationMin} min`,
+}));
 
 export default function BookingIndex() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-semibold">Book a Session</h1>
-      <p className="mt-2 text-gray-600">Choose a service to see open times on the Aspirer Firm calendar.</p>
-      <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-        {SERVICES.map(s => (
-          <li key={s.slug}>
-            <Link
-              href={`/booking/${s.slug}`}
-              className="block rounded border border-gray-200 p-4 hover:border-black"
-            >
-              <div className="font-medium">{s.title}</div>
-              <div className="text-sm text-gray-500">{s.durationMin} min</div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <main>
+      <Container className="py-16">
+        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Booking</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Choose a service</h1>
+        <p className="mt-2 max-w-xl text-gray-600">Click any card to see open times on the connected calendar.</p>
+        <div className="mt-10">
+          <CardGrid items={items} columns={3} />
+        </div>
+      </Container>
     </main>
   );
 }
