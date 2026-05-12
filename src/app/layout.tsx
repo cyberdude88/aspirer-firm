@@ -1,23 +1,27 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Poppins, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { RevealScripts } from "@/components/RevealScripts";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const poppins = Poppins({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  display: "swap",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const jetbrains = JetBrains_Mono({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Aspirer Firm — Mindset Coach for Entrepreneurs",
-  description: "Helping founders build unbreakable resilience, overcome self-doubt, and grow with confidence. 1:1 mindset coaching and programs led by Marie Cook, LMHP.",
+  title: "Aspirer Firm — Mindset Coaching for Entrepreneurs",
+  description: "Helping founders build unbreakable resilience, overcome self-doubt, and grow with confidence. 1:1 mindset coaching by Marie Cook, Licensed Mental Health Professional.",
 };
 
 export default function RootLayout({
@@ -27,10 +31,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black`}>
+      <body className={`${poppins.variable} ${jetbrains.variable}`}>
+        <div className="stage-bg" />
+        <div className="slashes" aria-hidden>
+          <div className="slash s1" />
+          <div className="slash s2" />
+          <div className="slash s3" />
+        </div>
+        <div className="stage-grain" aria-hidden />
         <Header />
         {children}
         <Footer />
+        <RevealScripts />
       </body>
     </html>
   );

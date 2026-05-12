@@ -1,45 +1,17 @@
-// Mindset-coaching service catalog. Aligns with the current Aspirer Firm
-// brand: 1:1 sessions, multi-session programs, plus free resources/intake.
-
+// Engagement tiers (public-facing). See AGENTS.md.
 export const SERVICES = [
-  {
-    slug: "discovery-call",
-    title: "Free Discovery Call",
-    durationMin: 20,
-    category: "Intake",
-    blurb: "A short, no-pressure call to see if we're a good fit. We'll talk through what's hard right now and whether 1:1 coaching is the right next step.",
-  },
-  {
-    slug: "mindset-session",
-    title: "1:1 Mindset Coaching Session",
-    durationMin: 60,
-    category: "Coaching",
-    blurb: "A single 60-minute working session for a specific block or decision — bring a real situation, leave with a clear move.",
-  },
-  {
-    slug: "conflict-communication",
-    title: "Conflict & Communication Session",
-    durationMin: 60,
-    category: "Coaching",
-    blurb: "For co-founder friction, hard team conversations, or family/work overlap. Shift the frame from “me vs. you” to “us vs. the problem.”",
-  },
-  {
-    slug: "self-doubt-to-self-trust",
-    title: "Self-Doubt to Self-Trust",
-    durationMin: 60,
-    category: "Programs",
-    blurb: "A 4-session program for founders stuck in second-guessing. Build the internal evidence base you can lead from.",
-  },
-  {
-    slug: "resilience-intensive",
-    title: "Resilience Intensive",
-    durationMin: 60,
-    category: "Programs",
-    blurb: "A 3-session intensive for founders coming out of (or heading into) a high-stakes stretch. Designed to hold under real pressure.",
-  },
+  { slug: "discovery-call", title: "Discovery Call", durationMin: 30, category: "Intake",
+    blurb: "A free 30-minute call. We talk about where you are, what's costing you, and whether this work is the right fit." },
+  { slug: "diagnostic", title: "The Diagnostic", durationMin: 60, category: "Engagements",
+    blurb: "A two-week assessment to surface the specific patterns costing you focus, sleep and decisiveness." },
+  { slug: "ninety-day-reset", title: "90-Day Reset", durationMin: 60, category: "Engagements",
+    blurb: "Weekly sessions and async accountability to rebuild stamina before your next stretch quarter." },
+  { slug: "annual-partnership", title: "Annual Partnership", durationMin: 60, category: "Engagements",
+    blurb: "A long-term 1:1 retainer for founders running multi-year arcs. Quarterly intensives + ongoing work." },
+  { slug: "team-workshops", title: "Team Workshops", durationMin: 240, category: "Engagements",
+    blurb: "Executive teams under load. Half-day or two-day formats around regulation, conflict, and decision quality." },
 ] as const;
 
 export type ServiceSlug = (typeof SERVICES)[number]["slug"];
 export const getService = (slug: string) => SERVICES.find(s => s.slug === slug);
-
 export const CATEGORIES = Array.from(new Set(SERVICES.map(s => s.category)));

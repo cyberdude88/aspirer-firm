@@ -1,42 +1,41 @@
 import Link from "next/link";
+import { Logo } from "./Logo";
 import { FIRM } from "@/lib/firm";
 
 export function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-white">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 sm:grid-cols-4">
-        <div className="sm:col-span-2">
-          <p className="font-semibold">{FIRM.name}</p>
-          <p className="mt-2 max-w-sm text-sm text-gray-600">{FIRM.positioning}</p>
-          <p className="mt-4 text-sm text-gray-600">
-            <a href={FIRM.phoneHref} className="hover:text-black">{FIRM.phone}</a>{" · "}
-            <a href={`mailto:${FIRM.email}`} className="hover:text-black">{FIRM.email}</a>
-          </p>
+    <footer className="foot-shell">
+      <div className="foot">
+        <div className="foot-brand">
+          <Link href="/" className="brand">
+            <Logo />
+            <div className="brand-word">ASPIRER<small>FIRM</small></div>
+          </Link>
+          <p>Mindset coaching for entrepreneurs. Licensed mental health professional. Confidential, evidence-based, founder-fluent.</p>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-gray-500">Firm</p>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><Link href="/about" className="hover:text-black">About Marie</Link></li>
-            <li><Link href="/#focus" className="hover:text-black">Focus Areas</Link></li>
-            <li><Link href="/#who-i-help" className="hover:text-black">Who I Help</Link></li>
-            <li><Link href="/#insights" className="hover:text-black">Insights</Link></li>
-          </ul>
+          <h4>Work</h4>
+          <Link href="/#approach">Approach</Link>
+          <Link href="/#services">Services</Link>
+          <Link href="/#voices">Voices</Link>
+          <Link href="/resources">Resources</Link>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-gray-500">Work With Me</p>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><Link href="/booking/discovery-call" className="hover:text-black">Free Discovery Call</Link></li>
-            <li><Link href="/#coaching" className="hover:text-black">1:1 Coaching</Link></li>
-            <li><Link href="/#programs" className="hover:text-black">Programs</Link></li>
-            <li><Link href="/resources" className="hover:text-black">Free Worksheet</Link></li>
-          </ul>
+          <h4>Firm</h4>
+          <Link href="/about">About</Link>
+          <Link href="/about">Credentials</Link>
+          <a href={FIRM.social.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <a href={`mailto:${FIRM.email}`}>{FIRM.email}</a>
+          <a href={FIRM.phoneHref}>{FIRM.phone}</a>
+          <Link href="/booking/discovery-call">Book a Call</Link>
         </div>
       </div>
-      <div className="border-t border-gray-100">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-6 py-4 text-xs text-gray-500">
-          <p>© {new Date().getFullYear()} {FIRM.name}. All rights reserved.</p>
-          <p>Next.js · Supabase · Stripe · Google</p>
-        </div>
+      <div className="foot-bottom mono">
+        <span>© {new Date().getFullYear()} ASPIRER FIRM. ALL RIGHTS RESERVED.</span>
+        <span>PRIVACY · TERMS · CONFIDENTIALITY</span>
       </div>
     </footer>
   );
