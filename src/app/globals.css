@@ -69,16 +69,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .stage-glow::before{
   background:
-    radial-gradient(1200px 720px at 22% 112%, rgba(36,86,168,.50) 0%, rgba(36,86,168,.12) 36%, transparent 62%),
-    radial-gradient(1100px 600px at 78% 106%, rgba(110,160,220,.30) 0%, transparent 60%),
-    radial-gradient(900px 480px at 50% 96%, rgba(70,120,200,.22) 0%, transparent 64%);
+    radial-gradient(1200px 720px at 22% 112%, rgba(196,118,72,.42) 0%, rgba(196,118,72,.10) 36%, transparent 62%),
+    radial-gradient(1100px 600px at 78% 106%, rgba(214,158,118,.32) 0%, transparent 60%),
+    radial-gradient(900px 480px at 50% 96%, rgba(184,128,108,.20) 0%, transparent 64%);
   animation:stage-glow-driftA 34s ease-in-out infinite alternate;
 }
 .stage-glow::after{
   background:
-    radial-gradient(820px 380px at 52% 102%, rgba(255,228,180,.22) 0%, transparent 64%),
-    radial-gradient(560px 280px at 50% 92%, rgba(255,247,228,.20) 0%, transparent 70%),
-    radial-gradient(420px 200px at 48% 86%, rgba(255,255,255,.10) 0%, transparent 72%);
+    radial-gradient(820px 380px at 52% 102%, rgba(255,212,158,.28) 0%, transparent 64%),
+    radial-gradient(620px 320px at 50% 94%, rgba(255,232,196,.24) 0%, transparent 68%),
+    radial-gradient(460px 220px at 48% 86%, rgba(255,246,228,.16) 0%, transparent 72%);
   mix-blend-mode:screen;
   animation:stage-glow-driftB 42s ease-in-out infinite alternate-reverse;
 }
