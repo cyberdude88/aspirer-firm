@@ -42,7 +42,7 @@ export default function Home() {
           </div>
           <div className="hero-actions">
             <Link href="/booking/discovery-call" className="btn btn-primary">Book a discovery call <span className="arr">→</span></Link>
-            <Link href="#approach" className="btn btn-ghost">See the approach</Link>
+            <a href="#approach" className="btn btn-ghost">See the approach</a>
           </div>
         </div>
         <div className="hero-scroll"><span>SCROLL</span><div className="bar" /></div>
@@ -156,7 +156,7 @@ export default function Home() {
           <div className="sec-head">
             <div>
               <span className="sec-tag mono">04 — VOICES</span>
-              <h2 className="sec-title reveal">From operators who stopped white-knuckling it.</h2>
+              <h2 className="sec-title reveal">From operators who stopped brute forcing the problem.</h2>
             </div>
             <p className="reveal d1">A few words from founders, CTOs and operators who&apos;ve worked through the program.</p>
           </div>
