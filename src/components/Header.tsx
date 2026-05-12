@@ -10,14 +10,14 @@ export function Header() {
         </Link>
         <nav className="flex items-center gap-6 text-sm text-gray-600">
           <Link href="/about" className="hover:text-black">About</Link>
-          <Link href="/#what-we-do" className="hover:text-black">Services</Link>
-          <Link href="/#who-we-help" className="hover:text-black">Who We Help</Link>
-          <Link href="/#case-studies" className="hover:text-black">Work</Link>
+          <Link href="/#coaching" className="hover:text-black">Coaching</Link>
+          <Link href="/#programs" className="hover:text-black">Programs</Link>
+          <Link href="/resources" className="hover:text-black">Free Worksheet</Link>
           <Link
-            href="/booking/audit-request"
+            href="/booking/discovery-call"
             className="rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800"
           >
-            Free Audit
+            Book Discovery Call
           </Link>
         </nav>
       </div>

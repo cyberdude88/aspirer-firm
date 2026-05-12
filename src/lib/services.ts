@@ -1,70 +1,41 @@
-// Real Aspirer Firm service categories (sourced from 2024 web.archive snapshot).
-// Booking durationMin is the standard intake/strategy-session length used by the
-// /api/availability slot generator.
+// Mindset-coaching service catalog. Aligns with the current Aspirer Firm
+// brand: 1:1 sessions, multi-session programs, plus free resources/intake.
 
 export const SERVICES = [
   {
-    slug: "audit-request",
-    title: "Free Audit Request",
-    durationMin: 30,
+    slug: "discovery-call",
+    title: "Free Discovery Call",
+    durationMin: 20,
     category: "Intake",
-    blurb: "A 30-minute call with our team to review your current marketing footprint and identify gaps before any engagement.",
+    blurb: "A short, no-pressure call to see if we're a good fit. We'll talk through what's hard right now and whether 1:1 coaching is the right next step.",
   },
   {
-    slug: "branding-design",
-    title: "Branding & Design",
+    slug: "mindset-session",
+    title: "1:1 Mindset Coaching Session",
     durationMin: 60,
-    category: "Design",
-    blurb: "Brand identity, logo, visual system, and collateral that reads as trustworthy in a sensitive industry.",
+    category: "Coaching",
+    blurb: "A single 60-minute working session for a specific block or decision — bring a real situation, leave with a clear move.",
   },
   {
-    slug: "web-development",
-    title: "Web Design & Development",
+    slug: "conflict-communication",
+    title: "Conflict & Communication Session",
     durationMin: 60,
-    category: "Design",
-    blurb: "Conversion-focused websites for treatment centers, clinics, and behavioral-health programs.",
+    category: "Coaching",
+    blurb: "For co-founder friction, hard team conversations, or family/work overlap. Shift the frame from “me vs. you” to “us vs. the problem.”",
   },
   {
-    slug: "videography",
-    title: "Videography",
+    slug: "self-doubt-to-self-trust",
+    title: "Self-Doubt to Self-Trust",
     durationMin: 60,
-    category: "Design",
-    blurb: "Patient stories, facility walk-throughs, and clinician introductions filmed with care and consent.",
+    category: "Programs",
+    blurb: "A 4-session program for founders stuck in second-guessing. Build the internal evidence base you can lead from.",
   },
   {
-    slug: "content-marketing",
-    title: "Content Marketing",
+    slug: "resilience-intensive",
+    title: "Resilience Intensive",
     durationMin: 60,
-    category: "Content & Social",
-    blurb: "Editorial that earns trust: clinical-grade explainers, family-facing guides, and evergreen resources.",
-  },
-  {
-    slug: "social-media",
-    title: "Social Media Marketing",
-    durationMin: 60,
-    category: "Content & Social",
-    blurb: "Calendar, creative, and community management across the platforms your audience actually uses.",
-  },
-  {
-    slug: "reputation-management",
-    title: "Reputation Management",
-    durationMin: 60,
-    category: "Content & Social",
-    blurb: "Reviews, listings, and crisis response — protect the trust your program has built.",
-  },
-  {
-    slug: "email-marketing",
-    title: "Email Marketing",
-    durationMin: 60,
-    category: "Content & Social",
-    blurb: "Lifecycle, referral, and alumni nurture programs that respect HIPAA boundaries.",
-  },
-  {
-    slug: "legitscript-consulting",
-    title: "LegitScript Consulting",
-    durationMin: 60,
-    category: "Consulting",
-    blurb: "Application prep, policy documentation, and ongoing compliance for LegitScript certification.",
+    category: "Programs",
+    blurb: "A 3-session intensive for founders coming out of (or heading into) a high-stakes stretch. Designed to hold under real pressure.",
   },
 ] as const;
 

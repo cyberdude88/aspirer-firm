@@ -12,23 +12,23 @@ export function Footer() {
             <a href={FIRM.phoneHref} className="hover:text-black">{FIRM.phone}</a>{" · "}
             <a href={`mailto:${FIRM.email}`} className="hover:text-black">{FIRM.email}</a>
           </p>
-          <p className="mt-1 text-sm text-gray-500">{FIRM.offices.join(" · ")}</p>
         </div>
         <div>
           <p className="text-xs font-medium uppercase tracking-widest text-gray-500">Firm</p>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><Link href="/about" className="hover:text-black">About</Link></li>
-            <li><Link href="/#who-we-help" className="hover:text-black">Who We Help</Link></li>
-            <li><Link href="/#case-studies" className="hover:text-black">Case Studies</Link></li>
-            <li><Link href="/#testimonials" className="hover:text-black">Testimonials</Link></li>
+            <li><Link href="/about" className="hover:text-black">About Marie</Link></li>
+            <li><Link href="/#focus" className="hover:text-black">Focus Areas</Link></li>
+            <li><Link href="/#who-i-help" className="hover:text-black">Who I Help</Link></li>
+            <li><Link href="/#insights" className="hover:text-black">Insights</Link></li>
           </ul>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-gray-500">Work With Us</p>
+          <p className="text-xs font-medium uppercase tracking-widest text-gray-500">Work With Me</p>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><Link href="/booking" className="hover:text-black">Services & Booking</Link></li>
-            <li><Link href="/booking/audit-request" className="hover:text-black">Free Audit Request</Link></li>
-            <li><Link href="/#contact" className="hover:text-black">Contact</Link></li>
+            <li><Link href="/booking/discovery-call" className="hover:text-black">Free Discovery Call</Link></li>
+            <li><Link href="/#coaching" className="hover:text-black">1:1 Coaching</Link></li>
+            <li><Link href="/#programs" className="hover:text-black">Programs</Link></li>
+            <li><Link href="/resources" className="hover:text-black">Free Worksheet</Link></li>
           </ul>
         </div>
       </div>

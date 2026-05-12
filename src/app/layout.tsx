@@ -16,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Aspirer Firm — Digital marketing for mental & behavioral healthcare",
-  description: "We help others, help others. Aspirer Firm is a boutique digital marketing agency built for the treatment industry — SEO, PPC, branding, web, content, and LegitScript consulting.",
+  title: "Aspirer Firm — Mindset Coach for Entrepreneurs",
+  description: "Helping founders build unbreakable resilience, overcome self-doubt, and grow with confidence. 1:1 mindset coaching and programs led by Marie Cook, LMHP.",
 };
 
 export default function RootLayout({

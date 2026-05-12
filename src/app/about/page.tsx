@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { Container } from "@/components/Container";
-import { FIRM, TEAM } from "@/lib/firm";
+import { FIRM, WHO_I_HELP } from "@/lib/firm";
 
 export const metadata = {
   title: `About — ${FIRM.name}`,
-  description: `${FIRM.positioning} Founded by ${FIRM.founder.name}.`,
+  description: `${FIRM.positioning}. ${FIRM.tagline}`,
 };
 
 export default function About() {
@@ -13,13 +14,10 @@ export default function About() {
         <Container className="py-24">
           <p className="text-xs uppercase tracking-[0.2em] text-gray-500">About</p>
           <h1 className="mt-4 max-w-3xl text-5xl font-semibold tracking-tight">
-            We help others, help others.
+            {FIRM.founder.name}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-gray-600">
-            {FIRM.name} is a digital marketing agency focused entirely on mental and behavioral
-            healthcare. We exist because the programs doing real clinical work deserve marketing
-            partners who understand what the work actually is.
-          </p>
+          <p className="mt-3 text-sm uppercase tracking-widest text-gray-500">{FIRM.founder.title}</p>
+          <p className="mt-6 max-w-2xl text-lg text-gray-600">{FIRM.tagline}</p>
         </Container>
       </section>
 
@@ -27,34 +25,38 @@ export default function About() {
         <Container className="py-16">
           <div className="grid gap-12 sm:grid-cols-2">
             <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Our Purpose</h2>
+              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Approach</h2>
               <p className="mt-3 text-gray-700">
-                To promote treatment programs that prioritize teamwork, clear communication, and
-                innovative solutions. We pride ourselves on providing ethical and practical
-                marketing for mental and behavioral healthcare centers.
+                I&apos;m a Licensed Mental Health Professional working as a mindset coach for
+                entrepreneurs. The work is direct, structured, and grounded in clinical training —
+                but it&apos;s not therapy. Sessions are about leverage: the small shifts that
+                change how you show up to the things that already matter.
               </p>
             </div>
             <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Communication is our focus</h2>
+              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">What sessions feel like</h2>
               <p className="mt-3 text-gray-700">
-                The treatment industry runs on a personal touch, and our agency is no exception.
-                As a boutique firm we value the personal relationships behind every engagement.
+                Bring a real situation — a decision, a conflict, a stuck pattern. We unpack it,
+                find the place to push, and leave with a move. Founders tend to describe the
+                cadence as “practical, fast, and human.”
               </p>
             </div>
             <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Results-Driven</h2>
+              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">What I won&apos;t do</h2>
               <p className="mt-3 text-gray-700">
-                Our marketing strategies are built from deep experience in behavioral treatment
-                and proven to generate qualified inquiries — not vanity traffic.
+                I won&apos;t pretend to be neutral when a pattern is hurting you. I won&apos;t
+                hand out generic mindset slogans. And I won&apos;t replace clinical care — when
+                that&apos;s what&apos;s needed, I&apos;ll say so and help route to the right
+                support.
               </p>
             </div>
             <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Where we work</h2>
+              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Reach me</h2>
               <p className="mt-3 text-gray-700">
-                We&apos;re a distributed team across {FIRM.offices.slice(0, -1).join(", ")} and {FIRM.offices.slice(-1)}.
-                Direct contact:{" "}
                 <a href={FIRM.phoneHref} className="underline underline-offset-4">{FIRM.phone}</a>{" · "}
-                <a href={`mailto:${FIRM.email}`} className="underline underline-offset-4">{FIRM.email}</a>.
+                <a href={`mailto:${FIRM.email}`} className="underline underline-offset-4">{FIRM.email}</a>
+                {" · "}
+                <a href={FIRM.social.facebook} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Facebook</a>
               </p>
             </div>
           </div>
@@ -63,15 +65,22 @@ export default function About() {
 
       <section className="border-t border-gray-200 bg-gray-50/60">
         <Container className="py-16">
-          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-500">Our Team</h2>
-          <ul className="mt-8 grid gap-6 sm:grid-cols-3">
-            {TEAM.map(p => (
-              <li key={p.name} className="rounded-xl border border-gray-200 bg-white p-6">
-                <h3 className="text-lg font-medium">{p.name}</h3>
-                <p className="mt-1 text-sm text-gray-600">{p.role}</p>
+          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-500">Who I Help</h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {WHO_I_HELP.map(w => (
+              <li key={w.slug} id={w.slug} className="rounded-xl border border-gray-200 bg-white p-5">
+                <p className="font-medium">{w.title}</p>
               </li>
             ))}
           </ul>
+          <div className="mt-10">
+            <Link
+              href="/booking/discovery-call"
+              className="inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-medium text-white hover:bg-gray-800"
+            >
+              Book free discovery call
+            </Link>
+          </div>
         </Container>
       </section>
     </main>
