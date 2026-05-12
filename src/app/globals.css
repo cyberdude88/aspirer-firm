@@ -3,25 +3,42 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf8f3;  /* warm off-white, away from clinical white */
+  --foreground: #1a1916;  /* near-black with brown undertone */
+  --muted: #6b6760;
+  --line: #e7e2d6;
+  --accent: #7a8a6f;      /* sage accent, used sparingly */
+  --ink: #14130f;         /* contact section deep ink */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #faf8f3;
+    --foreground: #1a1916;
   }
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-balance { text-wrap: balance; }
+  .text-pretty  { text-wrap: pretty; }
+  .font-serif-display {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Times New Roman', Georgia, serif;
+    font-feature-settings: "ss01", "ss02";
   }
+  .bg-paper { background: var(--background); }
+  .bg-paper-2 { background: #f3efe5; }
+  .bg-ink { background: var(--ink); }
+  .border-line { border-color: var(--line); }
+  .text-muted { color: var(--muted); }
+  .text-accent { color: var(--accent); }
+  .ring-accent { --tw-ring-color: var(--accent); }
 }

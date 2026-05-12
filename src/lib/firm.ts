@@ -12,7 +12,7 @@ export const FIRM = {
   phoneHref: "tel:+14016841450",
   founder: { name: "Marie Cook", title: "Licensed Mental Health Professional · Mindset Coach" },
   social: {
-    facebook: "https://www.facebook.com/aspirerfirm",
+    facebook: "https://www.facebook.com/people/Aspirer-Firm/61574700312914/",
     twitter: "https://twitter.com/Aspirerfim",
     instagram: "",
     linkedin: "",
