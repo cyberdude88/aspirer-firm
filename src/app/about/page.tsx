@@ -1,87 +1,125 @@
 import Link from "next/link";
-import { Container } from "@/components/Container";
 import { FIRM, WHO_I_HELP } from "@/lib/firm";
+import { AboutPortraitCard } from "@/components/AboutPortraitCard";
 
 export const metadata = {
   title: `About — ${FIRM.name}`,
   description: `${FIRM.positioning}. ${FIRM.tagline}`,
 };
 
+const PILLARS = [
+  {
+    tag: "APPROACH",
+    title: "Clinical depth, founder fluency.",
+    body: "A Licensed Mental Health Professional working as a mindset coach for entrepreneurs. The work is direct, structured, grounded in clinical training — but it isn't therapy. Sessions are about leverage: small shifts that change how you show up to the things that already matter.",
+  },
+  {
+    tag: "WHAT SESSIONS FEEL LIKE",
+    title: "Practical, fast, and human.",
+    body: "Bring a real situation — a decision, a conflict, a stuck pattern. We unpack it, find the place to push, and leave with a move. Founders tend to describe the cadence as direct without being cold.",
+  },
+  {
+    tag: "WHAT I WON'T DO",
+    title: "No slogans. No theatre.",
+    body: "I won't pretend to be neutral when a pattern is hurting you. I won't hand out generic mindset slogans. And I won't replace clinical care — when that's what's needed, I'll say so and help route to the right support.",
+  },
+  {
+    tag: "REACH ME",
+    title: "Direct line, no gatekeepers.",
+    body: "Phone, email, or social. I read everything that comes in and answer personally — typically within a business day.",
+    links: [
+      { label: FIRM.phone, href: FIRM.phoneHref },
+      { label: FIRM.email, href: `mailto:${FIRM.email}` },
+      { label: "Facebook", href: FIRM.social.facebook, external: true },
+    ],
+  },
+];
+
 export default function About() {
   return (
     <main>
-      <section className="border-b border-gray-200">
-        <Container className="py-24">
-          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">About</p>
-          <h1 className="mt-4 max-w-3xl text-5xl font-semibold tracking-tight">
-            {FIRM.founder.name}
-          </h1>
-          <p className="mt-3 text-sm uppercase tracking-widest text-gray-500">{FIRM.founder.title}</p>
-          <p className="mt-6 max-w-2xl text-lg text-gray-600">{FIRM.tagline}</p>
-        </Container>
-      </section>
-
-      <section>
-        <Container className="py-16">
-          <div className="grid gap-12 sm:grid-cols-2">
+      <section className="approach about-intro" style={{ paddingBottom: 80 }}>
+        <div className="wrap">
+          <div className="about-hero-grid">
             <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Approach</h2>
-              <p className="mt-3 text-gray-700">
-                I&apos;m a Licensed Mental Health Professional working as a mindset coach for
-                entrepreneurs. The work is direct, structured, and grounded in clinical training —
-                but it&apos;s not therapy. Sessions are about leverage: the small shifts that
-                change how you show up to the things that already matter.
+              <span className="sec-tag mono">— ABOUT</span>
+              <h1 className="sec-title reveal" style={{ marginTop: 18 }}>{FIRM.founder.name}</h1>
+              <p className="mono reveal d1" style={{ marginTop: 18, fontSize: 12, letterSpacing: ".24em", color: "var(--gold)", textTransform: "uppercase" }}>
+                {FIRM.founder.title}
+              </p>
+              <p className="reveal d2" style={{ marginTop: 28, maxWidth: "56ch", color: "var(--mute)", fontSize: 17, lineHeight: 1.65 }}>
+                {FIRM.tagline}
               </p>
             </div>
-            <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">What sessions feel like</h2>
-              <p className="mt-3 text-gray-700">
-                Bring a real situation — a decision, a conflict, a stuck pattern. We unpack it,
-                find the place to push, and leave with a move. Founders tend to describe the
-                cadence as “practical, fast, and human.”
-              </p>
-            </div>
-            <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">What I won&apos;t do</h2>
-              <p className="mt-3 text-gray-700">
-                I won&apos;t pretend to be neutral when a pattern is hurting you. I won&apos;t
-                hand out generic mindset slogans. And I won&apos;t replace clinical care — when
-                that&apos;s what&apos;s needed, I&apos;ll say so and help route to the right
-                support.
-              </p>
-            </div>
-            <div>
-              <h2 className="text-sm font-medium uppercase tracking-widest text-gray-500">Reach me</h2>
-              <p className="mt-3 text-gray-700">
-                <a href={FIRM.phoneHref} className="underline underline-offset-4">{FIRM.phone}</a>{" · "}
-                <a href={`mailto:${FIRM.email}`} className="underline underline-offset-4">{FIRM.email}</a>
-                {" · "}
-                <a href={FIRM.social.facebook} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Facebook</a>
-              </p>
-            </div>
+            <AboutPortraitCard />
           </div>
-        </Container>
+        </div>
       </section>
 
-      <section className="border-t border-gray-200 bg-gray-50/60">
-        <Container className="py-16">
-          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-500">Who I Help</h2>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {WHO_I_HELP.map(w => (
-              <li key={w.slug} id={w.slug} className="rounded-xl border border-gray-200 bg-white p-5">
-                <p className="font-medium">{w.title}</p>
-              </li>
+      <section className="approach" style={{ paddingTop: 40 }}>
+        <div className="wrap">
+          <div className="approach-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+            {PILLARS.map((p, i) => (
+              <div key={p.tag} className={`ap-card reveal${i ? ` d${i}` : ""}`}>
+                <div>
+                  <div className="ap-num mono">/ {p.tag}</div>
+                  <h3 style={{ marginTop: 14 }}>{p.title}</h3>
+                  <p>{p.body}</p>
+                  {p.links && (
+                    <p style={{ marginTop: 18, display: "flex", flexWrap: "wrap", gap: "10px 18px" }}>
+                      {p.links.map(l => (
+                        <a
+                          key={l.label}
+                          href={l.href}
+                          {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          style={{ color: "var(--gold)", borderBottom: "1px solid rgba(201,168,117,.4)", paddingBottom: 2 }}
+                        >
+                          {l.label}
+                        </a>
+                      ))}
+                    </p>
+                  )}
+                </div>
+              </div>
             ))}
-          </ul>
-          <div className="mt-10">
-            <Link
-              href="/booking/discovery-call"
-              className="inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Book free discovery call
-            </Link>
           </div>
-        </Container>
+        </div>
+      </section>
+
+      <section className="quotes" id="who">
+        <div className="wrap">
+          <div className="sec-head">
+            <div>
+              <span className="sec-tag mono">— WHO I HELP</span>
+              <h2 className="sec-title reveal">Built for these operators.</h2>
+            </div>
+            <p className="reveal d1">If you recognise yourself in one of these — or the gap between them — this is the room for that work.</p>
+          </div>
+          <div className="quotes-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+            {WHO_I_HELP.map((w, i) => (
+              <div key={w.slug} id={w.slug} className={`quote reveal${i ? ` d${Math.min(3, i)}` : ""}`}>
+                <div className="mark">·</div>
+                <p style={{ fontSize: 18, fontWeight: 500 }}>{w.title}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="cta">
+        <div className="wrap">
+          <div className="cta-card">
+            <div className="inside">
+              <span className="sec-tag mono" style={{ justifyContent: "center", display: "inline-flex" }}>— BEGIN</span>
+              <h2>Ready to take the next step?</h2>
+              <p>Free 30-minute discovery call. We&apos;ll talk about where you are, what&apos;s costing you, and whether this work is the right fit.</p>
+              <div className="cta-actions">
+                <Link href="/booking/discovery-call" className="btn btn-primary">Book a discovery call <span className="arr">→</span></Link>
+                <Link href="/#approach" className="btn btn-ghost">See the approach</Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, JetBrains_Mono } from "next/font/google";
+import { Poppins, JetBrains_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -19,9 +19,21 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
+const montserrat = Montserrat({
+  weight: ["200", "300", "600"],
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Aspirer Firm — Mindset Coaching for Entrepreneurs",
   description: "Helping founders build unbreakable resilience, overcome self-doubt, and grow with confidence. 1:1 mindset coaching by Marie Cook, Licensed Mental Health Professional.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -31,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} ${jetbrains.variable}`}>
+      <body className={`${poppins.variable} ${jetbrains.variable} ${montserrat.variable}`}>
         <div className="stage-bg" />
         <div className="slashes" aria-hidden>
           <div className="slash s1" />

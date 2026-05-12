@@ -3,6 +3,16 @@ import { google } from "googleapis";
 // OAuth2 client wired with the owner refresh token — used server-side to
 // read availability and create events on the business Gmail account.
 export function calendarClient() {
+  const missing = [
+    ["GOOGLE_CLIENT_ID", process.env.GOOGLE_CLIENT_ID],
+    ["GOOGLE_CLIENT_SECRET", process.env.GOOGLE_CLIENT_SECRET],
+    ["GOOGLE_OWNER_REFRESH_TOKEN", process.env.GOOGLE_OWNER_REFRESH_TOKEN],
+  ].filter(([, value]) => !value).map(([key]) => key);
+
+  if (missing.length) {
+    throw new Error(`Google Calendar is not configured. Missing: ${missing.join(", ")}`);
+  }
+
   const oauth2 = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,

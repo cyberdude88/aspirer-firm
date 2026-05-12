@@ -1,12 +1,30 @@
 import Image from "next/image";
 
-export function Logo({ size = 34 }: { size?: number }) {
+type LogoProps = {
+  size?: number;
+  src?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+};
+
+export function Logo({
+  size = 34,
+  src = "/aspirer-firm-logo.svg",
+  alt = "Aspirer Firm logo",
+  width,
+  height,
+}: LogoProps) {
+  const imageWidth = width ?? size;
+  const imageHeight = height ?? size;
+
   return (
     <Image
-      src="/aspirer-firm-logo.svg"
-      alt="Aspirer Firm logo"
-      width={size}
-      height={size}
+      src={src}
+      alt={alt}
+      width={imageWidth}
+      height={imageHeight}
+      sizes={`${imageWidth}px`}
       priority
       className="brand-mark"
     />

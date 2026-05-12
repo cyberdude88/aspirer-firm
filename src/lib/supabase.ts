@@ -3,15 +3,17 @@ import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const PUBLIC_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export function supabaseBrowser() {
-  return createBrowserClient(URL, ANON);
+  return createBrowserClient(URL, PUBLIC_KEY);
 }
 
 export function supabaseServer() {
   const store = cookies();
-  return createServerClient(URL, ANON, {
+  return createServerClient(URL, PUBLIC_KEY, {
     cookies: {
       get: (name: string) => store.get(name)?.value,
       set: (name: string, value: string, options: CookieOptions) =>

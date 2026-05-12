@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "./Logo";
 import { FIRM } from "@/lib/firm";
 
 export function Footer() {
@@ -8,8 +7,10 @@ export function Footer() {
       <div className="foot">
         <div className="foot-brand">
           <Link href="/" className="brand">
-            <Logo />
-            <div className="brand-word">ASPIRER<small>FIRM</small></div>
+            <div className="brand-word" aria-label="ASPIRER FIRM">
+              <span className="brand-line brand-line-main">ASPIRER</span>
+              <span className="brand-line brand-line-sub">FIRM</span>
+            </div>
           </Link>
           <p>Mindset coaching for entrepreneurs. Licensed mental health professional. Confidential, evidence-based, founder-fluent.</p>
         </div>

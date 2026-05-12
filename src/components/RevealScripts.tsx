@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 // Wires up the same DOM behaviors as the design source:
 //   - sticky nav scroll-state toggle
 //   - reveal-on-scroll via IntersectionObserver
 //   - approach card spotlight (mouse-tracking CSS vars)
 export function RevealScripts() {
+  const pathname = usePathname();
   useEffect(() => {
     const nav = document.getElementById("nav");
     const onScroll = () => nav?.classList.toggle("scrolled", window.scrollY > 12);
@@ -40,7 +42,7 @@ export function RevealScripts() {
       io.disconnect();
       cards.forEach(c => c.removeEventListener("mousemove", onMove));
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

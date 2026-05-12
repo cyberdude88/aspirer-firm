@@ -1,8 +1,15 @@
 import Stripe from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-09-30.acacia" as Stripe.LatestApiVersion,
-});
+export function getStripe() {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error("STRIPE_SECRET_KEY is not configured");
+  }
+
+  return new Stripe(secretKey, {
+    apiVersion: "2025-09-30.acacia" as Stripe.LatestApiVersion,
+  });
+}
 
 export const PRICE_BY_SLUG: Record<string, string | undefined> = {
   "diagnostic":          process.env.STRIPE_PRICE_DIAGNOSTIC,

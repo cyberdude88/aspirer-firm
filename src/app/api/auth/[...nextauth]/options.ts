@@ -1,7 +1,20 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import Google from "next-auth/providers/google";
 
+type GoogleJwt = JWT & {
+  googleAccessToken?: string;
+  googleRefreshToken?: string;
+};
+
+type GoogleSession = Session & {
+  googleAccessToken?: string;
+};
+
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: "/signin",
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -18,13 +31,15 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account }) {
-      if (account?.access_token) token.googleAccessToken = account.access_token;
-      if (account?.refresh_token) token.googleRefreshToken = account.refresh_token;
-      return token;
+      const nextToken = token as GoogleJwt;
+      if (account?.access_token) nextToken.googleAccessToken = account.access_token;
+      if (account?.refresh_token) nextToken.googleRefreshToken = account.refresh_token;
+      return nextToken;
     },
     async session({ session, token }) {
-      (session as any).googleAccessToken = token.googleAccessToken;
-      return session;
+      const nextSession = session as GoogleSession;
+      nextSession.googleAccessToken = (token as GoogleJwt).googleAccessToken;
+      return nextSession;
     },
   },
 };

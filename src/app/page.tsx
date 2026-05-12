@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
+import Image from "next/image";
 import { FIRM, MARQUEE_TERMS, APPROACH_STEPS, SHOWCASE_CHECKLIST, METRICS, TESTIMONIALS } from "@/lib/firm";
 import { SERVICES } from "@/lib/services";
 
@@ -24,6 +24,11 @@ export default function Home() {
     <>
       {/* HERO */}
       <section className="hero">
+        <div className="hero-reveal" aria-hidden="true">
+          <span className="hero-signature" />
+          <span className="hero-bars" />
+          <span className="hero-sheen" />
+        </div>
         <div className="hero-inner">
           <span className="hero-eyebrow"><span className="dot" /><span className="mono">{FIRM.positioning.toUpperCase()}</span></span>
           <h1>
@@ -84,8 +89,15 @@ export default function Home() {
         <div className="wrap">
           <div className="show-grid">
             <div className="show-visual reveal">
-              <div className="bigmark"><Logo size={64} /></div>
-              <span className="ph mono">PORTRAIT / DROP-IN</span>
+              <Image
+                src="/portrait.jpg"
+                alt={`${FIRM.founder.name} — ${FIRM.founder.title}`}
+                fill
+                sizes="(max-width: 900px) 100vw, 50vw"
+                className="show-portrait"
+                priority={false}
+              />
+              <div className="show-visual-shade" />
               <div className="show-stats">
                 <div className="n">12+</div>
                 <div className="l mono">YEARS LICENSED</div>

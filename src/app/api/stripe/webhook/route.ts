@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { createBooking } from "@/lib/google";
 import { getService } from "@/lib/services";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   let event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, secret);
+    event = getStripe().webhooks.constructEvent(body, sig, secret);
   } catch (err) {
     return NextResponse.json({ error: `bad signature: ${(err as Error).message}` }, { status: 400 });
   }

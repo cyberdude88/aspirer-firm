@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "google:owner-token": "node scripts/google-owner-token.mjs"
   },
   "dependencies": {
     "react": "^18",

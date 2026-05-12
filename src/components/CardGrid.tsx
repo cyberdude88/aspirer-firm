@@ -28,13 +28,13 @@ export function CardGrid({ items, columns = 3 }: { items: CardItem[]; columns?: 
 
 function Card({ href, title, description, meta, external }: CardItem) {
   const body = (
-    <div className="group h-full rounded-xl border border-gray-200 p-5 transition-colors hover:border-black">
+    <div className="group h-full rounded-xl border border-white/12 bg-white/[0.02] p-5 transition-all duration-200 hover:border-[color:var(--gold)] hover:bg-white/[0.04] hover:shadow-[0_0_0_1px_rgba(201,168,117,0.32),0_0_30px_rgba(201,168,117,0.18)]">
       <div className="flex items-baseline justify-between">
         <h3 className="text-base font-medium">{title}</h3>
-        {meta && <span className="text-xs text-gray-500">{meta}</span>}
+        {meta && <span className="text-xs text-white/55">{meta}</span>}
       </div>
-      <p className="mt-2 text-sm text-gray-600">{description}</p>
-      <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-gray-700 group-hover:text-black">
+      <p className="mt-2 text-sm text-white/68">{description}</p>
+      <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-white/72 transition-colors group-hover:text-[color:var(--gold)]">
         Open <Arrow />
       </span>
     </div>
