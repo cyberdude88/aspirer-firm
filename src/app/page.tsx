@@ -44,6 +44,13 @@ export default function Home() {
             <Link href="/booking/discovery-call" className="btn btn-primary">Book a discovery call <span className="arr">→</span></Link>
             <a href="#approach" className="btn btn-ghost">See the approach</a>
           </div>
+          <div className="hero-section-nav" aria-label="Section navigation">
+            <a href="#approach" className="section-pill mono">01 — Approach</a>
+            <a href="#work" className="section-pill mono">02 — The Work</a>
+            <a href="#services" className="section-pill mono">03 — Engagements</a>
+            <a href="#voices" className="section-pill mono">04 — Voices</a>
+            <a href="#book" className="section-pill mono">05 — Begin</a>
+          </div>
         </div>
         <div className="hero-scroll"><span>SCROLL</span><div className="bar" /></div>
       </section>
@@ -58,9 +65,9 @@ export default function Home() {
       </div>
 
       {/* APPROACH */}
-      <section className="approach" id="approach">
+      <section className="approach">
         <div className="wrap">
-          <div className="sec-head">
+          <div className="sec-head anchor-target" id="approach">
             <div>
               <span className="sec-tag mono">01 — THE APPROACH</span>
               <h2 className="sec-title reveal">A clinical foundation. A founder&apos;s vocabulary.</h2>
@@ -101,7 +108,7 @@ export default function Home() {
                 <div className="l mono">YEARS LICENSED</div>
               </div>
             </div>
-            <div className="show-body">
+            <div className="show-body anchor-target" id="work">
               <span className="sec-tag mono">02 — THE WORK</span>
               <h2 className="reveal d1">Where high performance meets <em>genuine</em> mental health.</h2>
               <p className="reveal d2">Most coaches give you a louder voice telling you to push. We give you a quieter one — and the tools, accountability and clinical depth to actually move from reactive to deliberate, from output to outcome.</p>
@@ -116,9 +123,9 @@ export default function Home() {
       </section>
 
       {/* SERVICES */}
-      <section className="services" id="services">
+      <section className="services">
         <div className="wrap">
-          <div className="sec-head">
+          <div className="sec-head anchor-target" id="services">
             <div>
               <span className="sec-tag mono">03 — ENGAGEMENTS</span>
               <h2 className="sec-title reveal">Four ways we work together.</h2>
@@ -151,9 +158,9 @@ export default function Home() {
       </section>
 
       {/* VOICES */}
-      <section className="quotes" id="voices">
+      <section className="quotes">
         <div className="wrap">
-          <div className="sec-head">
+          <div className="sec-head anchor-target" id="voices">
             <div>
               <span className="sec-tag mono">04 — VOICES</span>
               <h2 className="sec-title reveal">From operators who stopped brute forcing the problem.</h2>
@@ -179,9 +186,9 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="cta" id="book">
+      <section className="cta">
         <div className="wrap">
-          <div className="cta-card">
+          <div className="cta-card anchor-target" id="book">
             <div className="inside">
               <span className="sec-tag mono" style={{ justifyContent: "center", display: "inline-flex" }}>05 — BEGIN</span>
               <h2>The hardest work you&apos;ll do is the work no one sees.</h2>

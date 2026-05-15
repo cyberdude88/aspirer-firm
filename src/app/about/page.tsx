@@ -115,7 +115,7 @@ export default function About() {
               <p>Free 30-minute discovery call. We&apos;ll talk about where you are, what&apos;s costing you, and whether this work is the right fit.</p>
               <div className="cta-actions">
                 <Link href="/booking/discovery-call" className="btn btn-primary">Book a discovery call <span className="arr">→</span></Link>
-                <Link href="/#approach" className="btn btn-ghost">See the approach</Link>
+                <a href="/#approach" className="btn btn-ghost">See the approach</a>
               </div>
             </div>
           </div>

@@ -4,6 +4,8 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { RevealScripts } from "@/components/RevealScripts";
+import { FloatingBackgroundLogo } from "@/components/FloatingBackgroundLogo";
+import { LogoIntroDriver } from "@/components/LogoIntroDriver";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -36,6 +38,24 @@ export const metadata: Metadata = {
   },
 };
 
+// Synchronous boot script: stamps html[data-intro] before first paint
+// so the wipe animation (on the header LogoMark) and the wordmark
+// slide-in start in the right state with no FOUC.
+//   homepage load  → "armed"  (LogoIntroDriver advances to "playing")
+//   other routes / reduce → "done"
+const INTRO_BOOT = `
+try {
+  var d = document.documentElement;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    d.setAttribute('data-intro','done');
+  } else if (window.location && window.location.pathname === '/') {
+    d.setAttribute('data-intro','armed');
+  } else {
+    d.setAttribute('data-intro','done');
+  }
+} catch(e) { document.documentElement.setAttribute('data-intro','done'); }
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,19 +63,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: INTRO_BOOT }} />
+      </head>
       <body className={`${poppins.variable} ${jetbrains.variable} ${montserrat.variable}`}>
         <div className="stage-bg" />
         <div className="stage-glow" aria-hidden />
-        <div className="slashes" aria-hidden>
-          <div className="slash s1" />
-          <div className="slash s2" />
-          <div className="slash s3" />
-        </div>
+        <FloatingBackgroundLogo />
         <div className="stage-grain" aria-hidden />
-        <Header />
-        {children}
-        <Footer />
-        <RevealScripts />
+        <div className="site-shell">
+          <Header />
+          {children}
+          <Footer />
+          <RevealScripts />
+          <LogoIntroDriver />
+        </div>
       </body>
     </html>
   );

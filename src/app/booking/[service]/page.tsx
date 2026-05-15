@@ -12,6 +12,7 @@ export default function ServiceBooking() {
   const [slots, setSlots] = useState<string[]>([]);
   const [state, setState] = useState<FetchState>("loading");
   const [err, setErr] = useState<string | null>(null);
+  const [loadingLabel, setLoadingLabel] = useState("Loading.");
 
   const [viewMonth, setViewMonth] = useState(() => {
     const d = new Date();
@@ -20,7 +21,7 @@ export default function ServiceBooking() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("alex.ansbergs@gmail.com");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitErr, setSubmitErr] = useState<string | null>(null);
@@ -29,6 +30,22 @@ export default function ServiceBooking() {
   useEffect(() => {
     setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   }, []);
+
+  useEffect(() => {
+    if (state !== "loading") {
+      setLoadingLabel("Loading.");
+      return;
+    }
+
+    const labels = ["Loading.", "Loading..", "Loading..."];
+    let index = 0;
+    const timer = window.setInterval(() => {
+      index = (index + 1) % labels.length;
+      setLoadingLabel(labels[index]);
+    }, 450);
+
+    return () => window.clearInterval(timer);
+  }, [state]);
 
   useEffect(() => {
     setState("loading");
@@ -92,7 +109,11 @@ export default function ServiceBooking() {
         Times shown in {timeZone || "your local timezone"}.
       </p>
 
-      {state === "loading" && <p className="mt-10 text-white/55">Loading availability…</p>}
+      {state === "loading" && (
+        <p className="mt-10 text-white/55" aria-live="polite">
+          {loadingLabel}
+        </p>
+      )}
       {state === "error" && err && <p className="mt-10 text-red-400">{err}</p>}
 
       {state === "ready" && (

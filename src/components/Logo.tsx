@@ -6,6 +6,8 @@ type LogoProps = {
   alt?: string;
   width?: number;
   height?: number;
+  sizes?: string;
+  unoptimized?: boolean;
 };
 
 export function Logo({
@@ -14,6 +16,8 @@ export function Logo({
   alt = "Aspirer Firm logo",
   width,
   height,
+  sizes,
+  unoptimized = true,
 }: LogoProps) {
   const imageWidth = width ?? size;
   const imageHeight = height ?? size;
@@ -24,8 +28,9 @@ export function Logo({
       alt={alt}
       width={imageWidth}
       height={imageHeight}
-      sizes={`${imageWidth}px`}
+      sizes={sizes ?? `${imageWidth}px`}
       priority
+      unoptimized={unoptimized}
       className="brand-mark"
     />
   );

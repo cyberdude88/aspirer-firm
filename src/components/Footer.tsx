@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AboutNavLink } from "./AboutNavLink";
 import { FIRM } from "@/lib/firm";
 
 export function Footer() {
@@ -16,15 +17,15 @@ export function Footer() {
         </div>
         <div>
           <h4>Work</h4>
-          <Link href="/#approach">Approach</Link>
-          <Link href="/#services">Services</Link>
-          <Link href="/#voices">Voices</Link>
+          <a href="/#approach">Approach</a>
+          <a href="/#services">Services</a>
+          <a href="/#voices">Voices</a>
           <Link href="/resources">Resources</Link>
         </div>
         <div>
           <h4>Firm</h4>
-          <Link href="/about">About</Link>
-          <Link href="/about">Credentials</Link>
+          <AboutNavLink>About</AboutNavLink>
+          <AboutNavLink>Credentials</AboutNavLink>
           <a href={FIRM.social.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
         </div>
         <div>
