@@ -19,11 +19,7 @@ type BookingRow = {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminBookingsPage({
-  searchParams,
-}: {
-  searchParams?: { view?: string };
-}) {
+export default async function AdminBookingsPage() {
   const session = await requireAdminSession();
   const db = supabaseAdmin();
   const { data, error } = await db
@@ -36,41 +32,8 @@ export default async function AdminBookingsPage({
   }
 
   const rows = (data ?? []) as BookingRow[];
-  const now = new Date();
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-  const toTime = (slot: string) => new Date(slot).getTime();
-  const isTodayOrFuture = (slot: string) => toTime(slot) >= today.getTime();
-  const sortUpcomingFirst = (a: BookingRow, b: BookingRow) => {
-    const aTime = toTime(a.slot);
-    const bTime = toTime(b.slot);
-    const aUpcoming = aTime >= now.getTime();
-    const bUpcoming = bTime >= now.getTime();
-
-    if (aUpcoming && bUpcoming) return aTime - bTime;
-    if (aUpcoming) return -1;
-    if (bUpcoming) return 1;
-    return bTime - aTime;
-  };
-
-  const pending = rows
-    .filter(row => row.status === "pending" && isTodayOrFuture(row.slot))
-    .sort(sortUpcomingFirst);
-  const approved = rows
-    .filter(row => row.status === "approved")
-    .sort(sortUpcomingFirst);
-  const denied = rows
-    .filter(row => row.status === "denied" && isTodayOrFuture(row.slot))
-    .sort(sortUpcomingFirst);
-
-  const activeView = searchParams?.view === "approved" || searchParams?.view === "denied"
-    ? searchParams.view
-    : "pending";
-  const activeSection = activeView === "approved"
-    ? { id: "approved", title: "Approved", count: approved.length, emptyLabel: "No approved appointments yet.", rows: approved.slice(0, 20) }
-    : activeView === "denied"
-      ? { id: "denied", title: "Denied", count: denied.length, emptyLabel: "No denied appointments.", rows: denied.slice(0, 20) }
-      : { id: "pending", title: "Pending", count: pending.length, emptyLabel: "No pending requests.", rows: pending, actionable: true };
+  const pending = rows.filter(row => row.status === "pending");
+  const decided = rows.filter(row => row.status !== "pending");
 
   return (
     <main style={{ padding: "180px 0 120px" }}>
@@ -81,89 +44,35 @@ export default async function AdminBookingsPage({
           Signed in as {session.user?.email}. Pending requests hold their selected slot until you approve or deny them.
         </p>
 
-        <nav
-          aria-label="Booking sections"
-          style={{ marginTop: 28, display: "flex", gap: 12, flexWrap: "wrap" }}
-        >
-          <SectionTab href="/admin/bookings?view=pending" label="Pending" active={activeView === "pending"} />
-          <SectionTab href="/admin/bookings?view=approved" label="Approved" active={activeView === "approved"} />
-          <SectionTab href="/admin/bookings?view=denied" label="Denied" active={activeView === "denied"} />
-        </nav>
+        <section style={{ marginTop: 48 }}>
+          <div className="sec-head">
+            <h2>Pending</h2>
+            <span className="mono">{pending.length}</span>
+          </div>
+          {pending.length ? (
+            <div style={{ marginTop: 20, display: "grid", gap: 18 }}>
+              {pending.map(row => <BookingCard key={row.id} row={row} actionable />)}
+            </div>
+          ) : (
+            <p style={{ marginTop: 20, color: "var(--mute)" }}>No pending requests.</p>
+          )}
+        </section>
 
-        <div style={{ marginTop: 36 }}>
-          <StatusSection
-            id={activeSection.id}
-            title={activeSection.title}
-            count={activeSection.count}
-            emptyLabel={activeSection.emptyLabel}
-            rows={activeSection.rows}
-            actionable={activeSection.actionable}
-          />
-        </div>
+        <section style={{ marginTop: 56 }}>
+          <div className="sec-head">
+            <h2>Recently decided</h2>
+            <span className="mono">{decided.length}</span>
+          </div>
+          {decided.length ? (
+            <div style={{ marginTop: 20, display: "grid", gap: 18 }}>
+              {decided.slice(0, 20).map(row => <BookingCard key={row.id} row={row} />)}
+            </div>
+          ) : (
+            <p style={{ marginTop: 20, color: "var(--mute)" }}>No decisions recorded yet.</p>
+          )}
+        </section>
       </div>
     </main>
-  );
-}
-
-function SectionTab({
-  href,
-  label,
-  active,
-}: {
-  href: string;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <a
-      href={href}
-      className={active ? "btn btn-primary" : "btn btn-ghost"}
-      aria-current={active ? "page" : undefined}
-      style={active ? { boxShadow: "0 0 0 1px var(--gold) inset" } : undefined}
-    >
-      {label}
-    </a>
-  );
-}
-
-function StatusSection({
-  id,
-  title,
-  count,
-  emptyLabel,
-  rows,
-  actionable = false,
-}: {
-  id: string;
-  title: string;
-  count: number;
-  emptyLabel: string;
-  rows: BookingRow[];
-  actionable?: boolean;
-}) {
-  return (
-    <section
-      id={id}
-      style={{
-        scrollMarginTop: 160,
-        border: "1px solid var(--line)",
-        borderRadius: 24,
-        padding: 24,
-        background: "rgba(255,255,255,.025)",
-      }}
-    >
-      <div className="sec-head">
-        <h2>{title}</h2>
-        <span className="mono">{count}</span>
-      </div>
-      {rows.length ? (
-        <div style={{ marginTop: 20, display: "grid", gap: 18 }}>
-          {rows.map(row => <BookingCard key={row.id} row={row} actionable={actionable} />)}
-        </div>
-      ) : (
-        <p style={{ marginTop: 20, color: "var(--mute)" }}>{emptyLabel}</p>
-      )}
-    </section>
   );
 }
 
@@ -204,7 +113,7 @@ function BookingCard({ row, actionable = false }: { row: BookingRow; actionable?
           <p style={{ marginTop: 10, color: "var(--mute)", lineHeight: 1.65 }}>
             {row.name} · {row.email}
           </p>
-          <p style={{ marginTop: 10, color: "var(--text-strong)", lineHeight: 1.65 }}>
+          <p style={{ marginTop: 10, color: "#fff", lineHeight: 1.65 }}>
             {slot.toLocaleString(undefined, {
               weekday: "long",
               month: "long",
@@ -217,7 +126,7 @@ function BookingCard({ row, actionable = false }: { row: BookingRow; actionable?
           {row.notes ? (
             <p style={{ marginTop: 14, color: "var(--mute)", lineHeight: 1.65 }}>{row.notes}</p>
           ) : null}
-          <p className="mono" style={{ marginTop: 18, fontSize: 12, letterSpacing: ".18em", color: "var(--mute)" }}>
+          <p className="mono" style={{ marginTop: 18, fontSize: 11, letterSpacing: ".18em", color: "var(--mute)" }}>
             Requested {created.toLocaleString()}
             {decidedAt ? ` · Decided ${decidedAt.toLocaleString()}${row.decided_by ? ` by ${row.decided_by}` : ""}` : ""}
           </p>

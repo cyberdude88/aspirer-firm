@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
-import { getAuthSecret } from "@/lib/auth-secret";
 
 export const config = {
   matcher: ["/admin/:path*"],
@@ -13,7 +12,7 @@ function isAdminEmail(email?: string | null) {
 }
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: getAuthSecret() });
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (isAdminEmail(token?.email)) return NextResponse.next();
 
   const signInUrl = new URL("/signin", req.url);

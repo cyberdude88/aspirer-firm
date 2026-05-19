@@ -35,37 +35,6 @@ The dev server is already running in the background on `http://localhost:3000`. 
 ### Skill
 - `.claude/skills/responsive-css/SKILL.md` documents the @layer + custom properties + container queries + deterministic-layout + backdrop-filter pattern used here.
 
-## Day / night theme sprint — IN PROGRESS (2026-05-19)
-
-Toggle wiring is solid (`src/components/ThemeToggle.tsx`, boot script in `src/app/layout.tsx`, lives at top-right of nav via `Header.tsx:25`). The bug was that the design system was dark-only — most of the page hardcoded `rgba(255,255,255,.X)` and `#fff` rather than using tokens. Migration in progress in `src/app/globals.css`.
-
-### Done
-- Added full token taxonomy to `:root` and `html[data-theme="light"]`:
-  - `--text-strong / -soft / -muted / -faint`
-  - `--chrome-bg-1/2/3` and `--chrome-border-1/2/3` (translucent surface chrome)
-  - `--cta-solid-bg / -fg` (inverting primary CTA — flips white/black between modes)
-  - `--scrim-soft / -mid / -deep`
-  - `--hero-grad-1/2/3` (hero h1 background-clip gradient stops)
-  - `--floating-logo-invert` (0 in dark, 1 in light; used by `.floating-bg__mark img` filter so `logowhite.png` reads as a dark ghost on paper)
-- Fixed explicit-white bug at `.brand-line-sub` ("FIRM") → now `var(--text-strong)`.
-- Migrated to tokens: hero h1, hero-sub, hero-meta, hero-eyebrow, hero-scroll, nav-links, nav-cta, theme-toggle, section-pill, btn-primary, btn-ghost, ap-icon, svc-row, svc-arrow, quote, check, show-stats, metric, metrics bg, foot a, foot-legal-link, legal-nav, legal-card, legal-pre. Plus `.nav` border-bottom → `var(--line)`.
-
-### Outstanding (in priority order)
-1. **Visual QA pass.** Compiles clean (all routes 200, no warnings) but a human still needs to toggle at `/`, `/privacy`, `/terms`, `/confidentiality`, `/about`, `/booking` and look for residual white-on-white or dark-on-dark contrast failures.
-2. **Skipped intentionally:** drop-shadows (`rgba(0,0,0,.X)` reads fine on both bg colors); mask-image `#000` (alpha mask, not visible color); LogoIntro glow drop-shadows (cosmetic, intro-only). The intro overlay background stays `#0a0a0a` even in light mode — intentional: the wipe always plays against dark.
-
-### Done in this pass (2026-05-19, continuation)
-- `--nav-bg` + `--nav-bg-scrolled` tokens added to both `:root` and `html[data-theme="light"]`; replaced hardcoded `rgba(6,6,6,.7)` on `.nav.scrolled`.
-- New `LIGHT MODE — surface + decorative overrides` block appended at end of globals.css, covering: `.stage-bg`, `.stage-bg::before/::after`, `.stage-glow::before/::after`, `.stage-grain`, `.slash` (multiply + invert), `.logo-reveal__strokes image` (invert), `.hero::before/::after`, `.hero-bars`, `.strip`, `.marquee span`, `.ap-card` + `:hover`, `.show-visual` + `::before`, `.show-visual-shade`, `.quote` + `:hover`, `.avatar`, `.about-portrait-card` + `-media` + `-shade`, `.cta-card` + `::before/::after`, `.floating-bg__vignette`.
-- Verified: all 6 routes return 200; CSS compiles with no warnings.
-
-### Audit reference
-- Original audit found 113 hardcoded white/black uses across globals.css.
-- Token names live in `:root` (~lines 20–55) and `html[data-theme="light"]` (~lines 1340–1370). Update both whenever you add a new token.
-- The `data-theme` boot script in `layout.tsx:44-68` sets `<html data-theme>` synchronously before paint — no FOUC. `localStorage` key is `af-theme` (values: `light` | `dark`).
-
----
-
 ## Outstanding / nice-to-have
 
 1. **Visual QA of the morph.** The FLIP math translates the source box's center to the target box's center and scales by `target.width / source.width`. If the source box's aspect-ratio differs from the target's at any breakpoint, the morph will misalign. Both currently use `aspect-ratio: 590/527`, so they should match — verify by recording the intro in incognito and stepping frame-by-frame.
