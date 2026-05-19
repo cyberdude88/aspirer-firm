@@ -3,6 +3,7 @@ import type { JWT } from "next-auth/jwt";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { getAuthSecret } from "@/lib/auth-secret";
+import { isValidAdminCredential } from "@/lib/admin-auth";
 
 type GoogleJwt = JWT & {
   googleAccessToken?: string;
@@ -42,12 +43,9 @@ providers.push(
       password: { label: "Password", type: "password" },
     },
     async authorize(credentials) {
-      const expectedPassword = process.env.ADMIN_PASSWORD;
-      const adminEmail = process.env.ADMIN_EMAIL;
-      if (!expectedPassword || !adminEmail) return null;
-      if (!credentials?.username || credentials.username !== adminEmail) return null;
-      if (!credentials?.password || credentials.password !== expectedPassword) return null;
-      return { id: "admin", email: adminEmail, name: "Admin" };
+      const adminEmail = isValidAdminCredential(credentials?.username, credentials?.password);
+      if (!adminEmail) return null;
+      return { id: adminEmail, email: adminEmail, name: "Admin" };
     },
   }),
 );

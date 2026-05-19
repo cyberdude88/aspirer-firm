@@ -38,6 +38,7 @@ function SignInForm() {
         setError("Username and/or password incorrect.");
         return;
       }
+      await fetch("/api/admin/session", { method: "POST" });
       router.push(res.url ?? callbackUrl);
       router.refresh();
     });
