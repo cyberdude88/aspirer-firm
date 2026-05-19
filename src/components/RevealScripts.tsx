@@ -40,7 +40,6 @@ export function RevealScripts() {
       },
       { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
     );
-    const revealNodes = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
     const revealIfVisible = (el: HTMLElement) => {
       const rect = el.getBoundingClientRect();
       const viewportH = window.innerHeight || document.documentElement.clientHeight;
@@ -55,22 +54,52 @@ export function RevealScripts() {
       return false;
     };
 
-    revealNodes.forEach(el => {
+    const seenRevealNodes = new WeakSet<HTMLElement>();
+    const seenCards = new WeakSet<HTMLElement>();
+
+    const observeRevealNode = (el: HTMLElement) => {
+      if (seenRevealNodes.has(el)) return;
+      seenRevealNodes.add(el);
       if (!revealIfVisible(el)) io.observe(el);
-    });
+    };
 
-    const raf = window.requestAnimationFrame(() => {
-      revealNodes.forEach(revealIfVisible);
-    });
-
-    const cards = document.querySelectorAll<HTMLElement>(".ap-card");
     const onMove = (e: MouseEvent) => {
       const card = e.currentTarget as HTMLElement;
       const r = card.getBoundingClientRect();
       card.style.setProperty("--mx", `${((e.clientX - r.left) / r.width) * 100}%`);
       card.style.setProperty("--my", `${((e.clientY - r.top) / r.height) * 100}%`);
     };
-    cards.forEach(c => c.addEventListener("mousemove", onMove));
+
+    const wireCard = (card: HTMLElement) => {
+      if (seenCards.has(card)) return;
+      seenCards.add(card);
+      card.addEventListener("mousemove", onMove);
+    };
+
+    const processNode = (node: ParentNode) => {
+      if (node instanceof HTMLElement) {
+        if (node.matches(".reveal")) observeRevealNode(node);
+        if (node.matches(".ap-card")) wireCard(node);
+      }
+
+      node.querySelectorAll<HTMLElement>(".reveal").forEach(observeRevealNode);
+      node.querySelectorAll<HTMLElement>(".ap-card").forEach(wireCard);
+    };
+
+    processNode(document);
+
+    const raf = window.requestAnimationFrame(() => {
+      document.querySelectorAll<HTMLElement>(".reveal").forEach(revealIfVisible);
+    });
+
+    const mo = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        mutation.addedNodes.forEach(node => {
+          if (node instanceof HTMLElement) processNode(node);
+        });
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       document.removeEventListener("scroll", onScroll);
@@ -78,7 +107,10 @@ export function RevealScripts() {
       window.cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
-      cards.forEach(c => c.removeEventListener("mousemove", onMove));
+      mo.disconnect();
+      document.querySelectorAll<HTMLElement>(".ap-card").forEach(card => {
+        card.removeEventListener("mousemove", onMove);
+      });
     };
   }, [pathname]);
 

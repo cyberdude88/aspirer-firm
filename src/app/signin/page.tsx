@@ -72,9 +72,9 @@ function SignInForm() {
                 style={{
                   padding: "14px 16px",
                   borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,.18)",
-                  background: "rgba(255,255,255,.04)",
-                  color: "#fff",
+                  border: "1px solid var(--chrome-border-2)",
+                  background: "var(--chrome-bg-2)",
+                  color: "var(--text-strong)",
                   fontSize: 15,
                   outline: "none",
                 }}
@@ -93,9 +93,9 @@ function SignInForm() {
                 style={{
                   padding: "14px 16px",
                   borderRadius: 12,
-                  border: "1px solid rgba(255,255,255,.18)",
-                  background: "rgba(255,255,255,.04)",
-                  color: "#fff",
+                  border: "1px solid var(--chrome-border-2)",
+                  background: "var(--chrome-bg-2)",
+                  color: "var(--text-strong)",
                   fontSize: 15,
                   outline: "none",
                 }}

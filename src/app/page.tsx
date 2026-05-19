@@ -125,13 +125,14 @@ export default function Home() {
       {/* SERVICES */}
       <section className="services">
         <div className="wrap">
-          <div className="sec-head anchor-target" id="services">
+          <div className="sec-head">
             <div>
               <span className="sec-tag mono">03 — ENGAGEMENTS</span>
               <h2 className="sec-title reveal">Four ways we work together.</h2>
             </div>
             <p className="reveal d1">From a focused diagnostic to a full year of compounding work. Every engagement starts with a free 30-minute call.</p>
           </div>
+          <div id="services" className="services-jump-anchor" aria-hidden="true" />
           <div className="svc-list">
             {ENGAGEMENTS.map((s, i) => (
               <Link key={s.slug} className={`svc-row reveal${i ? ` d${i}` : ""}`} href={`/booking/${s.slug}`}>
