@@ -37,7 +37,11 @@ export function Footer() {
       </div>
       <div className="foot-bottom mono">
         <span>© {new Date().getFullYear()} ASPIRER FIRM. ALL RIGHTS RESERVED.</span>
-        <span>PRIVACY · TERMS · CONFIDENTIALITY</span>
+        <div className="foot-legal-links" aria-label="Legal documents">
+          <Link href="/privacy" className="foot-legal-link">Privacy</Link>
+          <Link href="/terms" className="foot-legal-link">Terms</Link>
+          <Link href="/confidentiality" className="foot-legal-link">Confidentiality</Link>
+        </div>
       </div>
     </footer>
   );

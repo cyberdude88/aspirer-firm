@@ -38,14 +38,22 @@ export const metadata: Metadata = {
   },
 };
 
-// Synchronous boot script: stamps html[data-intro] before first paint
-// so the wipe animation (on the header LogoMark) and the wordmark
-// slide-in start in the right state with no FOUC.
-//   homepage load  → "armed"  (LogoIntroDriver advances to "playing")
-//   other routes / reduce → "done"
-const INTRO_BOOT = `
+// Synchronous boot script: stamps html[data-theme] and html[data-intro]
+// before first paint so the page lands in the right color + intro state
+// with no flash of mismatched content.
+const BOOT = `
 try {
   var d = document.documentElement;
+
+  var stored;
+  try { stored = localStorage.getItem('af-theme'); } catch(e) {}
+  var prefersLight =
+    window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  var theme = (stored === 'light' || stored === 'dark')
+    ? stored
+    : (prefersLight ? 'light' : 'dark');
+  d.setAttribute('data-theme', theme);
+
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     d.setAttribute('data-intro','done');
   } else if (window.location && window.location.pathname === '/') {
@@ -53,7 +61,10 @@ try {
   } else {
     d.setAttribute('data-intro','done');
   }
-} catch(e) { document.documentElement.setAttribute('data-intro','done'); }
+} catch(e) {
+  document.documentElement.setAttribute('data-theme','dark');
+  document.documentElement.setAttribute('data-intro','done');
+}
 `;
 
 export default function RootLayout({
@@ -64,7 +75,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: INTRO_BOOT }} />
+        <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>
       <body className={`${poppins.variable} ${jetbrains.variable} ${montserrat.variable}`}>
         <div className="stage-bg" />

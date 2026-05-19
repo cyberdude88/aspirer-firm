@@ -21,7 +21,7 @@ export default function ServiceBooking() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("alex.ansbergs@gmail.com");
+  const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitErr, setSubmitErr] = useState<string | null>(null);
