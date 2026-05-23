@@ -117,7 +117,7 @@ export default function ServiceBooking() {
       {state === "error" && err && <p className="mt-10 text-red-400">{err}</p>}
 
       {state === "ready" && (
-        <div className="mt-10 grid gap-10 md:grid-cols-[1fr_280px]">
+        <div className="mt-10 grid gap-10 rounded-2xl border border-white/12 bg-black/60 p-6 backdrop-blur-md md:grid-cols-[1fr_280px] md:p-8">
           <section>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium">
@@ -202,7 +202,7 @@ export default function ServiceBooking() {
       )}
 
       {state === "ready" && selectedSlot && (
-        <section className="mt-12 max-w-xl rounded-xl border border-white/10 bg-white/[0.03] p-6">
+        <section className="mt-12 max-w-xl rounded-xl border border-white/12 bg-black/60 p-6 backdrop-blur-md">
           <h2 className="text-lg font-medium">Request this time</h2>
           <p className="mt-1 text-sm text-white/55">
             {new Date(selectedSlot).toLocaleString(undefined, {

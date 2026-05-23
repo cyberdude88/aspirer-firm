@@ -25,7 +25,7 @@
  */
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type FloatingBackgroundLogoProps = {
   /** Opacity of the lead (brightest) copy. Trail copies fade from here. */
@@ -66,13 +66,30 @@ export function FloatingBackgroundLogo({
   scale = 1.512,
   duration = 400,
   parallax = 0.057,
-  trailCount = 9,
+  trailCount = 7,
   trailSpread = 1.0,
   tailFade = 0.88,
-  src = "/logowhite.png",
+  src,
   className,
 }: FloatingBackgroundLogoProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  // Theme-switched, pre-baked tint variants. Replaces the per-frame
+  // `filter: grayscale(1) invert() brightness(.66) contrast(.93)` chain
+  // that previously ran on every trail copy's inner <img> on every
+  // composite — a major cost across 7 layers on mobile GPUs.
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    const read = () =>
+      root.getAttribute("data-theme") === "light" ? "light" : "dark";
+    setTheme(read());
+    const obs = new MutationObserver(() => setTheme(read()));
+    obs.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  const resolvedSrc =
+    src ?? (theme === "light" ? "/logowhite-light.png" : "/logowhite-dark.png");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -152,7 +169,7 @@ export function FloatingBackgroundLogo({
         return (
           <div key={i} className="floating-bg__mark" style={instanceStyle}>
             <Image
-              src={src}
+              src={resolvedSrc}
               alt=""
               width={1536}
               height={1024}
