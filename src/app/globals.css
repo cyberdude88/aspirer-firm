@@ -513,7 +513,11 @@ html[data-intro="done"] .brand-word-hero .brand-line{
   .brand-word-hero .brand-line-main{font-size:clamp(22px,7vw,30px);letter-spacing:.16em}
   .brand-word-hero .brand-line-sub{font-size:clamp(34px,10vw,46px);letter-spacing:.18em;margin-top:2px;line-height:.9}
   .brand-word-hero .brand-line{--tx:0}
-  .nav-row{gap:14px}
+  .nav-row{
+    width:100%;
+    flex-direction:column;
+    gap:12px;
+  }
   .nav-cta{padding:10px 18px;font-size:11px}
   .hero{padding:300px 20px 56px;min-height:82vh;min-height:82svh}
   .slash{left:-16%;width:132%;height:15vh}

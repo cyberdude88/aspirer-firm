@@ -8,8 +8,27 @@ change.
 Source of truth references:
 - `src/middleware.ts` — admin gate
 - `src/app/api/**` — 8 public endpoints (see surface map)
+- `src/app/booking/[service]/page.tsx` — booking request form
+- `src/app/resources/[slug]/page.tsx` — resource email capture form
+- `src/app/signin/page.tsx` + `src/app/api/auth/[...nextauth]/options.ts` — admin sign-in inputs
 - `src/lib/{admin-auth,admin-session,auth-secret,booking,google,stripe,supabase}.ts`
 - `.env.local.example` — required env keys
+
+### 0.1 Input validation status (current state)
+
+Validation exists, but it is inconsistent across the site. Use this as the quick audit baseline:
+
+| Surface | Current validation | Gaps to track |
+|---|---|---|
+| `GET /api/availability` | validates `slug` via `getService()` | no shared schema, error path still manual |
+| `POST /api/bookings` | trims inputs, validates service, email regex, slot parse, booking window, slot availability | no max lengths, accepts unknown keys, `notes` is uncapped free text, validation logic is route-local only |
+| `POST /api/resources/request` | only checks truthy `slug` and `email.includes("@")` | no JSON parse guard, no slug allowlist check, no normalization, no email quality check, no length caps |
+| `POST /api/stripe/checkout` | validates `slug` by service + price lookup | `slot` is effectively unchecked, request body shape is not validated, relies on caller discipline |
+| `POST /api/admin/bookings/decide` | invalid JSON guard, integer `id`, enum-style `decision` check | no shared schema or same-origin/CSRF check |
+| `POST /api/admin/session` | no body accepted | route assumes only authenticated UI calls it; no origin check |
+| `/booking/[service]` form | client blocks empty `name`/`email` and uses `type="email"` | client-side checks are convenience only; no length limits or stronger inline validation |
+| `/resources/[slug]` form | browser `type="email"` + `required` | still depends on weak server validation |
+| `/signin` form | browser `required` on username/password | no visible client-side constraints; server-side credential path should be rate-limited |
 
 ---
 
@@ -99,6 +118,21 @@ Hit each of these on prod after deploy and verify 200 + content render:
 `/`, `/about`, `/booking`, `/resources`, `/privacy`, `/terms`, `/confidentiality`,
 `/signin`. Check the browser console for errors.
 
+### 2.7 Input validation regression checklist
+
+Run these checks against every route or form you touch. Validation should fail closed with a deterministic 4xx, never a 500.
+
+1. **JSON parsing**: send malformed JSON to each POST route and expect `400`, not an unhandled exception.
+2. **Type enforcement**: send arrays, numbers, booleans, and nested objects where strings are expected; reject with `400`.
+3. **Normalization**: leading/trailing whitespace in `name`, `email`, `slug`, and `slot` should be trimmed or rejected consistently.
+4. **Enum / allowlist checks**: `slug` must resolve to a known service/resource; admin `decision` must be only `approve` or `deny`.
+5. **Length caps**: verify reasonable server-side max lengths for free-text inputs, especially booking `notes`, admin credentials, and email fields.
+6. **Email quality**: reject obviously invalid addresses server-side even if the browser input type allows them.
+7. **Date / slot validation**: reject malformed ISO strings, impossible dates, and slots outside the active booking window.
+8. **Unknown keys**: confirm extra payload keys are ignored safely or rejected explicitly; they must not alter control flow.
+9. **Error hygiene**: invalid input returns user-safe messages only; internal provider or database error strings stay server-side.
+10. **Client/server parity**: browser `required` and `type="email"` are convenience only; server validation must independently enforce the same rules.
+
 ---
 
 ## 3. Code-hardening backlog
@@ -143,10 +177,15 @@ clear remediation. Tackle high → low.
 
 ### Medium
 
-6. **Manual input validation in routes.**
-   `bookings/route.ts` uses ad-hoc string trims and a regex for email.
-   - *Fix:* introduce `zod` and define one schema per route. Reject early with
-     consistent `400` responses; trivially catches type confusion and unknown keys.
+6. **Site-wide input validation is inconsistent.**
+   `bookings/route.ts`, `resources/request/route.ts`, `stripe/checkout/route.ts`,
+   and the admin sign-in flow all validate inputs differently. Today the booking
+   route is the strictest path, while resources and checkout accept weakly-shaped
+   payloads.
+   - *Fix:* introduce one schema per input surface and validate before any side
+     effects. At minimum cover JSON parse failure, type checks, length caps,
+     slug allowlists, email normalization, slot/date validation, and unknown-key
+     rejection. If you add `zod`, use it everywhere rather than mixing styles.
 
 7. **No security headers in `next.config.mjs`.**
    - *Fix:* add `headers()` returning CSP, `Strict-Transport-Security`,
@@ -195,7 +234,7 @@ Add a CI workflow (GitHub Actions) that runs on every PR and the main branch.
 # .github/workflows/ci.yml
 - npm ci
 - npm run lint            # next lint
-- npx tsc --noEmit        # typecheck
+- npm run typecheck       # tsc --noEmit
 - npm run build           # next build (catches dynamic-route + RSC errors)
 - npm audit --omit=dev --audit-level=high
 ```
@@ -334,7 +373,7 @@ Mapped to this app, not generic.
 Before `vercel --prod` (or letting Vercel auto-deploy a merge to `main`):
 
 - [ ] `npm run lint` clean
-- [ ] `npx tsc --noEmit` clean
+- [ ] `npm run typecheck` clean
 - [ ] `npm run build` clean locally
 - [ ] §2 verification flows for any touched surface
 - [ ] No new `console.log` left in production code paths
