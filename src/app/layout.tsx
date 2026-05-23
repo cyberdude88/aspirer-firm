@@ -56,7 +56,12 @@ try {
     : (prefersLight ? 'light' : 'dark');
   d.setAttribute('data-theme', theme);
 
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  var introSeen = false;
+  try { introSeen = sessionStorage.getItem('af-intro-seen') === '1'; } catch(e) {}
+  if (introSeen) {
+    d.setAttribute('data-intro','done');
+    d.setAttribute('data-glow','done');
+  } else if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     d.setAttribute('data-intro','done');
   } else if (window.location && window.location.pathname === '/') {
     d.setAttribute('data-intro','armed');

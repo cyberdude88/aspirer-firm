@@ -25,6 +25,15 @@ export function SmoothScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Skip Lenis on touch-primary devices. Native iOS/Android scroll has
+    // hardware-tuned rubber-band + friction physics that JS smoothing
+    // can't match; running Lenis on top adds a perceptible "chop-then-go"
+    // hiccup at scroll start. Desktop wheel users still get smoothing.
+    if (
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches
+    ) {
+      return;
+    }
 
     const lenis = new Lenis({
       lerp: 0.085,

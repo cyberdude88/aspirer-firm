@@ -42,6 +42,20 @@ export function LogoIntroDriver() {
       root.setAttribute("data-intro", "done");
       return;
     }
+    // Session-level skip. If the intro already played in this tab, don't
+    // replay — replaying briefly hides the floating background trail via
+    // the html:not([data-intro="done"]) CSS rule, which restarts every
+    // CSS animation from frame 0 when the element reappears. Skipping
+    // preserves background continuity across in-app navigation.
+    let introSeen = false;
+    try {
+      introSeen = sessionStorage.getItem("af-intro-seen") === "1";
+    } catch {}
+    if (introSeen) {
+      root.setAttribute("data-intro", "done");
+      root.setAttribute("data-glow", "done");
+      return;
+    }
 
     let cancelled = false;
     let timer: number | null = null;
@@ -65,6 +79,9 @@ export function LogoIntroDriver() {
           if (cancelled) return;
           root.setAttribute("data-intro", "done");
           root.setAttribute("data-glow", "done");
+          try {
+            sessionStorage.setItem("af-intro-seen", "1");
+          } catch {}
         }, T_WIPE_TOTAL);
       });
     });

@@ -18,9 +18,9 @@ export function Header() {
       </div>
       <div className="nav-row">
         <div className="nav-links">
-          <a href="/#approach">Approach</a>
-          <a href="/#services">Services</a>
-          <a href="/#voices">Voices</a>
+          <Link href="/#approach">Approach</Link>
+          <Link href="/#services">Services</Link>
+          <Link href="/#voices">Voices</Link>
           <AboutNavLink>About</AboutNavLink>
         </div>
         <Link href="/booking/discovery-call" className="nav-cta">Book a Call</Link>
