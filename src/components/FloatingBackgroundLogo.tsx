@@ -61,12 +61,12 @@ type FloatingBackgroundLogoProps = {
 };
 
 export function FloatingBackgroundLogo({
-  opacity = 0.14,
+  opacity = 0.18,
   blur = 1.6,
   scale = 1.512,
-  duration = 103,
+  duration = 400,
   parallax = 0.057,
-  trailCount = 20,
+  trailCount = 9,
   trailSpread = 1.0,
   tailFade = 0.88,
   src = "/logowhite.png",
@@ -157,8 +157,8 @@ export function FloatingBackgroundLogo({
               width={1536}
               height={1024}
               priority={false}
-              unoptimized
               draggable={false}
+              sizes="(max-width: 820px) 140vw, 2200px"
             />
           </div>
         );
