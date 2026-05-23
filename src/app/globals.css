@@ -481,7 +481,7 @@ html[data-intro="done"] .brand-word-hero .brand-line{
     flex-wrap:nowrap;
     width:100%;
     gap:28px;
-    padding:4px 18px 6px;
+    padding:4px 20px 6px;
     overflow-x:auto;
     overflow-y:hidden;
     scroll-snap-type:x mandatory;
@@ -494,8 +494,8 @@ html[data-intro="done"] .brand-word-hero .brand-line{
   .nav-links::-webkit-scrollbar{display:none}
   .nav-links a{flex:0 0 auto;scroll-snap-align:center;font-size:12px;letter-spacing:.06em;white-space:nowrap}
   .nav-links a::after{bottom:-3px}
-  .nav{padding:16px 18px 22px}
-  .nav.scrolled{padding:12px 18px 18px;gap:6px}
+  .nav{padding:16px 20px 22px}
+  .nav.scrolled{padding:12px 20px 18px;gap:6px}
   .brand{
     flex-direction:column;
     gap:8px;
