@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { RevealScripts } from "@/components/RevealScripts";
 import { FloatingBackgroundLogo } from "@/components/FloatingBackgroundLogo";
+import { AmbientMesh } from "@/components/AmbientMesh";
 import { LogoIntroDriver } from "@/components/LogoIntroDriver";
 
 const poppins = Poppins({
@@ -79,6 +80,7 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.variable} ${jetbrains.variable} ${montserrat.variable}`}>
         <div className="stage-bg" />
+        <AmbientMesh />
         <div className="stage-glow" aria-hidden />
         <FloatingBackgroundLogo />
         <div className="stage-grain" aria-hidden />
