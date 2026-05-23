@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { RevealScripts } from "@/components/RevealScripts";
 import { FloatingBackgroundLogo } from "@/components/FloatingBackgroundLogo";
 import { AmbientMesh } from "@/components/AmbientMesh";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { LogoIntroDriver } from "@/components/LogoIntroDriver";
 
 const poppins = Poppins({
@@ -79,6 +80,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>
       <body className={`${poppins.variable} ${jetbrains.variable} ${montserrat.variable}`}>
+        <SmoothScroll />
         <div className="stage-bg" />
         <AmbientMesh />
         <div className="stage-glow" aria-hidden />

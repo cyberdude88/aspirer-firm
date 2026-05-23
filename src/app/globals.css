@@ -56,6 +56,14 @@ section[id]{scroll-margin-top:calc(var(--nav-h) + var(--anchor-gap))}
 .anchor-target{scroll-margin-top:calc(var(--nav-h) + var(--anchor-gap) - var(--section-anchor-lift))}
 .services-jump-anchor{scroll-margin-top:calc(var(--nav-h) + 16px);height:0}
 html,body{background:var(--surface-bg);color:var(--surface-ink);font-family:var(--font-poppins),system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* Lenis handshake: when Lenis is active it adds .lenis to <html> and
+   .lenis-smooth while a smooth-scroll animation is in progress. Disable
+   native scroll-behavior to avoid double-tweening anchor jumps. */
+html.lenis,html.lenis body{height:auto}
+html.lenis.lenis-smooth{scroll-behavior:auto !important}
+html.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+html.lenis.lenis-stopped{overflow:hidden}
 body{font-weight:400;line-height:1.5}
 .site-shell{position:relative;z-index:1}
 a{color:inherit;text-decoration:none}
@@ -1336,23 +1344,16 @@ html[data-glow="done"] .nav .logo-reveal .logo-reveal__strokes {
   inset: 52% auto auto 44%;
   width: clamp(1200px, 140vw, 2200px);
   aspect-ratio: 1536 / 1024;
-  /* Centering AND scroll-driven parallax in one property. */
+  /* Centering AND scroll-driven parallax in one property. Lenis feeds
+     this lerped values, so it stays smooth. */
   translate: -50% calc(-50% + var(--fb-scroll-y));
-  /* Per-copy opacity (set inline on each trail copy) falls back to the
-     wrapper-level --fb-opacity for single-instance usage. */
   opacity: var(--fb-instance-opacity, var(--fb-opacity));
-  /* Tint baked into PNG source, so we only run the cheap non-spatial
-     adjustments here (saturate/brightness/contrast restore the pre-perf
-     visual character). Blur radius driven by --fb-blur from inline style. */
   filter: blur(var(--fb-blur)) saturate(0) brightness(0.82) contrast(0.94);
   animation:
     fb-drift var(--fb-duration) linear infinite,
     fb-breathe calc(var(--fb-duration) * 0.75) ease-in-out infinite alternate;
-  /* Only transform animates here. Listing translate/opacity in will-change
-     forces extra layer promotion every layer is then a separately
-     composited bitmap. */
   will-change: transform;
-  transform: translateZ(0); /* promote to its own compositor layer */
+  transform: translateZ(0);
 }
 .floating-bg__mark img {
   width: 100%;
