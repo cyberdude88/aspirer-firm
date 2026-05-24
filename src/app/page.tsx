@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FIRM, MARQUEE_TERMS, APPROACH_STEPS, SHOWCASE_CHECKLIST, METRICS, TESTIMONIALS } from "@/lib/firm";
+import { FIRM, APPROACH_STEPS, SHOWCASE_CHECKLIST, METRICS, TESTIMONIALS } from "@/lib/firm";
 import { SERVICES } from "@/lib/services";
 
 const ENGAGEMENTS = SERVICES.filter(s => s.category === "Engagements");
@@ -55,14 +55,7 @@ export default function Home() {
         <div className="hero-scroll"><span>SCROLL</span><div className="bar" /></div>
       </section>
 
-      {/* MARQUEE */}
-      <div className="strip">
-        <div className="marquee">
-          {[0, 1].map(i => (
-            <span key={i}>{MARQUEE_TERMS.map(t => <span key={t}>{t}</span>)}</span>
-          ))}
-        </div>
-      </div>
+
 
       {/* APPROACH */}
       <section className="approach">
@@ -91,6 +84,7 @@ export default function Home() {
 
       {/* SHOWCASE */}
       <section className="showcase">
+        <div id="work" className="services-jump-anchor" aria-hidden="true" />
         <div className="wrap">
           <div className="show-grid">
             <div className="show-visual reveal">
@@ -108,7 +102,7 @@ export default function Home() {
                 <div className="l mono">YEARS LICENSED</div>
               </div>
             </div>
-            <div className="show-body anchor-target" id="work">
+            <div className="show-body">
               <span className="sec-tag mono">02 — THE WORK</span>
               <h2 className="reveal d1">Where high performance meets <em>genuine</em> mental health.</h2>
               <p className="reveal d2">Most coaches give you a louder voice telling you to push. We give you a quieter one — and the tools, accountability and clinical depth to actually move from reactive to deliberate, from output to outcome.</p>

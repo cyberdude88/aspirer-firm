@@ -173,16 +173,17 @@ html:not([data-intro="done"]) .ambient-mesh{
    820px so the page renders smoothly without losing the visual
    character. */
 @media (max-width: 820px){
-  /* Trail: render only the first 3 copies on mobile (hide 4–7), and
-     shrink each copy from clamp(1200px,140vw,2200px) — which forces
-     1200px on small viewports — down to a viewport-relative size.
-     Also trim per-copy blur radius (10px on desktop → 4px on mobile)
-     so the filter cost stays mobile-affordable. */
+  /* Mobile keeps a short layered logo trail so the shaded depth remains,
+     but we cap it at 3 copies instead of the full desktop stack. */
   .floating-bg__mark:nth-child(n+4){display:none}
-  .floating-bg__mark{width:clamp(420px, 130vw, 900px)}
+  .floating-bg__mark{
+    inset:50% auto auto 50%;
+    width:clamp(640px, 205vw, 980px);
+    translate:-50% calc(-50% + clamp(-130px, var(--fb-scroll-y, 0px), 130px));
+    filter:blur(1px) saturate(0) brightness(0.82) contrast(0.94);
+    animation-name:fb-drift-mobile, fb-breathe;
+  }
 
-  /* Nav: backdrop-filter is the #1 cause of iOS Safari banding/flicker
-     under animated content. Replace with a more solid panel. */
   .nav{
     backdrop-filter:none;
     -webkit-backdrop-filter:none;
@@ -192,12 +193,26 @@ html:not([data-intro="done"]) .ambient-mesh{
   html[data-theme="light"] .nav{background:rgba(244,241,236,.86)}
   html[data-theme="light"] .nav.scrolled{background:rgba(244,241,236,.95)}
 
-  /* Ambient mesh is nearly invisible at the chosen opacity; drop it
-     entirely on mobile to free 5 blurred GPU layers. */
-  .ambient-mesh{display:none}
+  .ambient-mesh{display:block}
+  .ambient-mesh__inner,
+  .ambient-mesh__noise{display:none}
+  html[data-theme="dark"] .ambient-mesh{
+    background:
+      radial-gradient(78% 46% at 16% 10%, rgba(247,243,238,.10), transparent 72%),
+      radial-gradient(86% 52% at 88% 26%, rgba(228,215,198,.10), transparent 74%),
+      radial-gradient(98% 58% at 30% 58%, rgba(217,200,180,.09), transparent 74%),
+      radial-gradient(92% 58% at 70% 86%, rgba(205,183,158,.12), transparent 74%),
+      radial-gradient(122% 84% at 50% 55%, rgba(38,30,22,.24), transparent 72%);
+  }
+  html[data-theme="light"] .ambient-mesh{
+    background:
+      radial-gradient(78% 46% at 16% 10%, rgba(96,76,50,.05), transparent 72%),
+      radial-gradient(86% 52% at 88% 26%, rgba(120,94,60,.05), transparent 74%),
+      radial-gradient(98% 58% at 30% 58%, rgba(108,84,54,.05), transparent 74%),
+      radial-gradient(92% 58% at 70% 86%, rgba(128,98,62,.08), transparent 74%),
+      radial-gradient(122% 84% at 50% 55%, rgba(74,58,40,.06), transparent 72%);
+  }
 
-  /* Stage-glow: keep the warm bottom pool but kill the per-frame blur
-     and the two drift animations. Static gradient costs almost nothing. */
   .stage-glow::before,
   .stage-glow::after{
     animation:none;
@@ -206,10 +221,7 @@ html:not([data-intro="done"]) .ambient-mesh{
   .stage-glow{animation:stage-glow-in 4.5s cubic-bezier(.22,.84,.22,1) .3s forwards}
 }
 
-/* ---------- REDUCED MOTION ----------
-   The boot script already disables the logo intro for reduced-motion
-   users. Also pause the trail + mesh + glow drifts so the page is
-   genuinely still for accessibility settings. */
+/* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion: reduce){
   .floating-bg__mark,
   .ambient-mesh__blob,
@@ -224,119 +236,41 @@ html:not([data-intro="done"]) .ambient-mesh{
 /* ============================================================
    AMBIENT MESH BACKGROUND
    ------------------------------------------------------------
-   Five oversized blurred "light pools" in a warm cream/sand
-   palette drift slowly across the viewport. Sits behind the
-   FloatingBackgroundLogo (z-index: 0) and above the .stage-bg
-   base (z-index: -2). Transform-only keyframes → compositor
-   handles every frame, no layout/paint thrash. Mobile-safe.
+   Scroll-only desktop mesh with three lighter blobs.
    ============================================================ */
 .ambient-mesh{
   position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
   contain:strict;
   isolation:isolate;
-  /* Soft warm vignette on top of the dark stage so the blobs read against
-     a slightly warm field rather than the cold #11–17 base. */
   background:radial-gradient(120% 80% at 50% 50%, rgba(38,30,22,.32) 0%, transparent 70%);
-  --mesh-y:0px;
 }
 .ambient-mesh__inner{
   position:absolute;inset:0;
-  /* Scroll-velocity offset, set by AmbientMesh's rAF lerp. CSS-only
-     fallback: stays at 0,0 if JS is disabled. */
-  transform:translate3d(0, var(--mesh-y, 0px), 0);
-  will-change:transform;
+  contain:layout paint style;
 }
 .ambient-mesh__blob{
   position:absolute;
-  width:65vmax;height:65vmax;
+  width:54vmax;height:54vmax;
   border-radius:50%;
-  /* Reduced from 80px — the blobs are at low opacity so the visual
-     softness is already there; the larger radius was pure GPU cost. */
-  filter:blur(55px);
+  filter:blur(42px);
   will-change:transform;
-  transform:translate3d(0,0,0);
-  /* Normal blend so the cream tones paint as actual warm pools rather than
-     just brightening whatever sits behind them. */
+  transform:translate3d(var(--mesh-blob-x, 0px), var(--mesh-blob-y, 0px), 0);
 }
-/* Each blob: distinct warm tone, offset start, distinct duration in 20–40s
-   window so loops never realign. Each blob travels ~25–40% of the viewport
-   across its arc so the motion is plainly visible, not subliminal. */
 .ambient-mesh__blob--1{
   top:-15%;left:-12%;
-  background:radial-gradient(circle at 50% 50%, rgba(247,243,238,.22) 0%, rgba(247,243,238,.10) 40%, transparent 68%);
-  animation:ambient-drift-1 64s cubic-bezier(.45,.05,.55,.95) infinite alternate;
+  background:radial-gradient(circle at 50% 50%, rgba(247,243,238,.19) 0%, rgba(247,243,238,.09) 38%, transparent 66%);
 }
 .ambient-mesh__blob--2{
   top:-8%;right:-18%;
-  background:radial-gradient(circle at 50% 50%, rgba(239,230,218,.20) 0%, rgba(239,230,218,.09) 42%, transparent 70%);
-  animation:ambient-drift-2 56s cubic-bezier(.45,.05,.55,.95) infinite alternate;
-  animation-delay:-9s;
+  background:radial-gradient(circle at 50% 50%, rgba(239,230,218,.18) 0%, rgba(239,230,218,.08) 40%, transparent 68%);
 }
 .ambient-mesh__blob--3{
   top:24%;left:22%;
-  width:75vmax;height:75vmax;
-  background:radial-gradient(circle at 50% 50%, rgba(228,215,198,.18) 0%, rgba(228,215,198,.08) 44%, transparent 72%);
-  filter:blur(70px);
-  animation:ambient-drift-3 50s cubic-bezier(.45,.05,.55,.95) infinite alternate;
-  animation-delay:-14s;
-}
-.ambient-mesh__blob--4{
-  bottom:-18%;right:-6%;
-  background:radial-gradient(circle at 50% 50%, rgba(217,200,180,.20) 0%, rgba(217,200,180,.09) 42%, transparent 70%);
-  filter:blur(65px);
-  animation:ambient-drift-4 43s cubic-bezier(.45,.05,.55,.95) infinite alternate;
-  animation-delay:-5s;
-}
-.ambient-mesh__blob--5{
-  bottom:-22%;left:4%;
-  width:55vmax;height:55vmax;
-  background:radial-gradient(circle at 50% 50%, rgba(205,183,158,.18) 0%, rgba(205,183,158,.08) 44%, transparent 72%);
-  filter:blur(70px);
-  animation:ambient-drift-5 36s cubic-bezier(.45,.05,.55,.95) infinite alternate;
-  animation-delay:-11s;
-}
-.ambient-mesh__noise{
-  position:absolute;inset:0;pointer-events:none;
-  opacity:.07;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .96  0 0 0 0 .92  0 0 0 0 .85  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  width:62vmax;height:62vmax;
+  background:radial-gradient(circle at 50% 50%, rgba(228,215,198,.17) 0%, rgba(228,215,198,.07) 42%, transparent 70%);
+  filter:blur(48px);
 }
 
-/* Each blob travels a clearly visible arc — 25–40% of viewport across the
-   loop. Slow ease so it never reads as "fast", but the motion is obvious
-   if you watch any part of the screen for more than a few seconds. */
-@keyframes ambient-drift-1{
-  0%  { transform:translate3d(-6%, -4%, 0) scale(1)    rotate(-6deg); }
-  100%{ transform:translate3d(28%, 22%, 0) scale(1.12) rotate( 8deg); }
-}
-@keyframes ambient-drift-2{
-  0%  { transform:translate3d( 4%,  0%, 0) scale(1.05) rotate( 4deg); }
-  100%{ transform:translate3d(-30%, 26%, 0) scale(1)    rotate(-10deg); }
-}
-@keyframes ambient-drift-3{
-  0%  { transform:translate3d(-8%,-10%, 0) scale(.98)  rotate(-4deg); }
-  100%{ transform:translate3d(18%, 14%, 0) scale(1.10) rotate( 10deg); }
-}
-@keyframes ambient-drift-4{
-  0%  { transform:translate3d( 0%,  4%, 0) scale(1)    rotate( 2deg); }
-  100%{ transform:translate3d(-26%,-22%, 0) scale(1.14) rotate(-8deg); }
-}
-@keyframes ambient-drift-5{
-  0%  { transform:translate3d( 6%,  2%, 0) scale(1)    rotate(-2deg); }
-  100%{ transform:translate3d(-22%,-26%, 0) scale(1.08) rotate( 6deg); }
-}
-
-@media (max-width:820px){
-  /* Trim blur radius on small screens — same visual band, much cheaper
-     fill cost on mobile GPUs. */
-  .ambient-mesh__blob{filter:blur(60px)}
-  .ambient-mesh__blob--3{filter:blur(70px)}
-  .ambient-mesh__blob--4{filter:blur(65px)}
-  .ambient-mesh__blob--5{filter:blur(55px)}
-}
-
-@media (prefers-reduced-motion: reduce){
-  .ambient-mesh__blob{animation:none}
-}
 .slashes{
   position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
 }
@@ -476,54 +410,71 @@ html[data-intro="done"] .brand-word-hero .brand-line{
   .theme-toggle:active svg{transform:none}
 }
 @media (max-width:820px){
-  .nav-links{
-    display:flex;
-    flex-wrap:nowrap;
-    width:100%;
-    gap:28px;
-    padding:4px 20px 6px;
-    overflow-x:auto;
-    overflow-y:hidden;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    justify-content:flex-start;
-    -webkit-mask-image:linear-gradient(to right,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);
-    mask-image:linear-gradient(to right,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);
-  }
-  .nav-links::-webkit-scrollbar{display:none}
-  .nav-links a{flex:0 0 auto;scroll-snap-align:center;font-size:12px;letter-spacing:.06em;white-space:nowrap}
-  .nav-links a::after{bottom:-3px}
-  .nav{padding:16px 20px 22px}
-  .nav.scrolled{padding:12px 20px 18px;gap:6px}
+  /* On phones the scrollbar is an overlay (zero layout width). Match that
+     in preview/desktop-narrow by removing the scrollbar's reserved space,
+     so centered content sits on the true viewport center, not offset by
+     half a scrollbar. */
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+  .nav{padding:10px 16px 12px;gap:10px}
+  .nav.scrolled{padding:6px 16px 10px;gap:6px}
   .brand{
-    flex-direction:column;
-    gap:8px;
-    width:100%;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    width:auto;
   }
   .brand-word{
     margin-left:0;
-    width:100%;
-    align-items:center;
+    align-items:flex-start;
     overflow:visible;
   }
-  .brand-word-hero{margin-left:0;padding-top:4px}
-  .brand-line-main{font-size:15px;letter-spacing:.18em}
-  .brand-line-sub{font-size:11px;letter-spacing:.34em;margin-top:4px}
-  .brand-word-hero .brand-line-main{font-size:clamp(22px,7vw,30px);letter-spacing:.16em}
-  .brand-word-hero .brand-line-sub{font-size:clamp(34px,10vw,46px);letter-spacing:.18em;margin-top:2px;line-height:.9}
+  .brand-word-hero{margin-left:0;padding-top:0}
+  .brand-line-main{font-size:18px;letter-spacing:.18em}
+  .brand-line-sub{font-size:13px;letter-spacing:.34em;margin-top:3px}
+  .brand-word-hero .brand-line-main{font-size:clamp(20px,6vw,30px);letter-spacing:.16em}
+  .brand-word-hero .brand-line-sub{font-size:clamp(32px,9vw,46px);letter-spacing:.18em;margin-top:1px;line-height:.9}
   .brand-word-hero .brand-line{--tx:0}
+  /* nav-row wraps: links take their own full-width line (all four
+     visible, centered), the CTA + theme toggle wrap to a second line. */
   .nav-row{
     width:100%;
-    flex-direction:column;
-    gap:12px;
+    flex-direction:row;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    gap:10px 16px;
   }
-  .nav-cta{padding:10px 18px;font-size:11px}
-  .hero{padding:300px 20px 56px;min-height:82vh;min-height:82svh}
-  .slash{left:-16%;width:132%;height:15vh}
-  .slash.s1{top:16%}
-  .slash.s2{top:44%}
-  .slash.s3{top:72%}
+  .nav-links{
+    order:1;
+    width:100%;
+    display:flex;
+    flex-wrap:nowrap;
+    justify-content:center;
+    gap:18px;
+    padding:0;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{flex:0 0 auto;font-size:12px;letter-spacing:.05em;white-space:nowrap}
+  .nav-links a::after{bottom:-3px}
+  .nav-cta{order:2;padding:8px 16px;font-size:11px;flex:0 0 auto}
+  .theme-toggle{order:3}
+  .hero{padding:190px 20px 56px;min-height:82vh;min-height:82svh}
+}
+/* Short viewports (landscape phones): the hero's big top padding + tall
+   min-height push the title off-screen. Shrink both, and size the title
+   to the available height so it never clips. */
+@media (max-height:560px) and (orientation:landscape){
+  .hero{padding-top:96px;padding-bottom:32px;min-height:0}
+  .hero h1{font-size:clamp(24px,6.4vh,52px);margin-top:14px}
+  .hero-sub{margin-top:12px;font-size:14px;line-height:1.45}
+  .hero-meta{margin-top:18px}
+  .hero-actions{margin-top:18px}
 }
 
 /* ---------- HERO ---------- */
@@ -644,7 +595,7 @@ html[data-intro="done"] .brand-word-hero .brand-line{
 .btn:hover .arr{transform:translateX(4px)}
 
 .hero-scroll{
-  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;
   font-size:10px;letter-spacing:.32em;color:var(--text-faint);text-transform:uppercase;
   display:flex;align-items:center;gap:10px;flex-direction:column;
 }
@@ -656,19 +607,6 @@ html[data-intro="done"] .brand-word-hero .brand-line{
   50%{transform:scale(1.16) translate3d(1.5%, 1%, 0)}
   100%{transform:scale(1.12) translate3d(3%, 2%, 0)}
 }
-
-/* ---------- MARQUEE ---------- */
-.strip{
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  overflow:hidden;padding:22px 0;background:rgba(255,255,255,.015);backdrop-filter:blur(6px);
-}
-.marquee{display:flex;gap:60px;width:max-content;animation:scroll 75.6s linear infinite}
-.marquee span{
-  display:inline-flex;align-items:center;gap:60px;
-  font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.5);
-}
-.marquee span::after{content:"✦";color:var(--gold);font-size:10px}
-@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* ---------- INNER PAGES ---------- */
 main{padding-top:170px}
@@ -851,7 +789,27 @@ section{position:relative}
 .foot a:hover{color:var(--gold)}
 .foot-brand p{color:var(--mute);font-size:14px;line-height:1.65;margin-top:18px;max-width:36ch}
 .foot-bottom{max-width:1240px;margin:48px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--mute);letter-spacing:.06em}
-@media (max-width:820px){.foot{grid-template-columns:1fr 1fr;gap:32px}}
+.foot-credit{max-width:1240px;margin:16px auto 0;text-align:center;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint)}
+.foot-credit-link{color:var(--text-soft);text-decoration:none;border-bottom:1px solid transparent;transition:color .25s ease,border-color .25s ease}
+.foot-credit-link:hover{color:var(--gold);border-color:var(--gold)}
+@media (max-width:820px){
+  .foot{grid-template-columns:1fr 1fr;gap:32px}
+  /* The brand block would otherwise sit in the left column only, reading as
+     off-center. Span it full width and center it above the link columns. */
+  .foot-brand{grid-column:1 / -1;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .foot-brand .brand{justify-content:center}
+  .foot-brand .brand-word{align-items:center}
+  .foot-brand p{max-width:42ch;margin-left:auto;margin-right:auto}
+}
+@media (max-width:820px){
+  .cta-card{
+    padding:72px 24px;
+    background:rgba(255,255,255,.035);
+    backdrop-filter:none;
+  }
+  .cta-card::before,
+  .cta-card::after{display:none}
+}
 
 /* ---------- REVEAL (remotion-style emerge) ---------- */
 .reveal{
@@ -893,7 +851,11 @@ section{position:relative}
 .hero-reveal{
   position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
 }
-.hero > .hero-inner,.hero > .hero-scroll{position:relative;z-index:2}
+/* Only .hero-inner is promoted to a relative flex item. .hero-scroll keeps
+   its own position:absolute (below) so it stays OUT of the hero flex row —
+   otherwise it becomes a second in-flow item, flex-shrinks .hero-inner off
+   100% width, and packs the pair to the left (offsetting all hero text). */
+.hero > .hero-inner{position:relative;z-index:2}
 
 
 /* shade lines pinned to exact hero dimensions */
@@ -1342,14 +1304,9 @@ html[data-glow="done"] .nav .logo-reveal .logo-reveal__strokes {
 
 .floating-bg__mark {
   position: absolute;
-  /* Orbit center: horizontally balanced (~44%); vertically mid-page (52%)
-     so the trail's vertical sweep passes through the nav area as well as
-     the body content. */
-  inset: 52% auto auto 44%;
+  inset: 50% auto auto 50%;
   width: clamp(1200px, 140vw, 2200px);
   aspect-ratio: 1536 / 1024;
-  /* Centering AND scroll-driven parallax in one property. Lenis feeds
-     this lerped values, so it stays smooth. */
   translate: -50% calc(-50% + var(--fb-scroll-y));
   opacity: var(--fb-instance-opacity, var(--fb-opacity));
   filter: blur(var(--fb-blur)) saturate(0) brightness(0.82) contrast(0.94);
@@ -1359,6 +1316,11 @@ html[data-glow="done"] .nav .logo-reveal .logo-reveal__strokes {
   will-change: transform;
   transform: translateZ(0);
 }
+@media (min-width:821px){
+  .floating-bg__mark{animation-play-state:paused}
+  .floating-bg[data-active="true"] .floating-bg__mark{animation-play-state:running}
+}
+
 .floating-bg__mark img {
   width: 100%;
   height: 100%;
@@ -1394,6 +1356,13 @@ html[data-glow="done"] .nav .logo-reveal .logo-reveal__strokes {
   50%  { transform: translate3d( 26vw,   0vw, 0) rotate( 1.2deg); }
   75%  { transform: translate3d(  0vw,  24vw, 0) rotate(-0.6deg); }
   100% { transform: translate3d(-26vw,   0vw, 0) rotate(-1.2deg); }
+}
+@keyframes fb-drift-mobile {
+  0%   { transform: translate3d(-14vw,   0vw, 0) rotate(-0.8deg); }
+  25%  { transform: translate3d(  0vw, -12vw, 0) rotate( 0.4deg); }
+  50%  { transform: translate3d( 14vw,   0vw, 0) rotate( 0.8deg); }
+  75%  { transform: translate3d(  0vw,  12vw, 0) rotate(-0.4deg); }
+  100% { transform: translate3d(-14vw,   0vw, 0) rotate(-0.8deg); }
 }
 
 /* --- Breathe: ±3% scale around the prop-driven base. Opacity is left to
@@ -1766,9 +1735,6 @@ html[data-theme="light"] .hero-bars{
   mix-blend-mode:multiply;
 }
 
-/* Marquee strip — flip scrim + text. */
-html[data-theme="light"] .strip{background:rgba(10,10,10,.025)}
-html[data-theme="light"] .marquee span{color:rgba(10,10,10,.55)}
 
 /* Approach cards — switch translucent dark for translucent paper. */
 html[data-theme="light"] .ap-card{background:rgba(244,241,236,.62)}

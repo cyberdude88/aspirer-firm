@@ -101,9 +101,11 @@ export function FloatingBackgroundLogo({
     let targetY = 0;
     let currentY = 0;
     let rafId: number | null = null;
+    let activeTimeout: number | null = null;
 
     // Smoothing constant: lower = more drag (logo lags more).
     const SMOOTHING = 0.08;
+    const isDesktop = window.innerWidth > 820;
 
     const tick = () => {
       const delta = targetY - currentY;
@@ -120,15 +122,27 @@ export function FloatingBackgroundLogo({
 
     const onScroll = () => {
       targetY = -window.scrollY * parallax;
+      if (isDesktop) {
+        el.dataset.active = "true";
+        if (activeTimeout != null) window.clearTimeout(activeTimeout);
+        activeTimeout = window.setTimeout(() => {
+          el.dataset.active = "false";
+          activeTimeout = null;
+        }, 260);
+      }
       if (rafId == null) rafId = requestAnimationFrame(tick);
     };
 
+    if (isDesktop) {
+      el.dataset.active = "false";
+    }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       if (rafId != null) cancelAnimationFrame(rafId);
+      if (activeTimeout != null) window.clearTimeout(activeTimeout);
     };
   }, [parallax]);
 
