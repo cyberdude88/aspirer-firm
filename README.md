@@ -4,7 +4,7 @@ Next.js (App Router, TS, Tailwind) site with:
 
 - **Supabase** — booking request queue persistence (`@supabase/ssr`, service-role for server writes)
 - **Google OAuth** — NextAuth Google sign-in for admin review
-- **Admin queue** — `/admin/bookings` approve/deny flow gated by `ADMIN_EMAIL`
+- **Admin queue** — `/admin/bookings` approve/deny flow gated by Supabase Auth admin metadata
 - **Google Calendar** — owner-account refresh token support remains in-repo for confirmed-booking flows
 - **Stripe** — existing checkout/webhook scaffolding remains in-repo for paid engagements
 
@@ -50,8 +50,8 @@ The repo does not need to be pushed to Git before Google Calendar works. The int
    ```sql
    -- See scripts/migrations/001_discovery_and_admin.sql
    ```
-4. **Admin access** — set `ADMIN_EMAIL` to the Google account allowed into `/admin/bookings`.
-5. **Stripe** — optional for the existing paid-engagement scaffolding. Create one Product + Price per service, paste price IDs into `STRIPE_PRICE_*`, and forward a local webhook with `stripe listen --forward-to localhost:3000/api/stripe/webhook`.
+4. **Admin access** — create the admin user in Supabase Auth and set `app_metadata.role = "admin"` or `app_metadata.is_admin = true`.
+5. **Stripe** — create one Product + Price for each paid engagement (`diagnostic`, `ninety-day-reset`, `annual-partnership`, `team-workshops`), paste those price IDs into the matching `STRIPE_PRICE_*` vars, and forward a local webhook with `stripe listen --forward-to localhost:3000/api/stripe/webhook`.
 
 ## Layout
 

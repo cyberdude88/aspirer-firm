@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminUser } from "@/lib/admin";
 import { supabaseAdmin, supabaseServer } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   const { data, error: authError } = await supabaseServer().auth.getUser();
-  const adminEmail = data.user?.email ?? null;
-  if (authError || !isAdminEmail(adminEmail)) {
+  const adminUser = data.user ?? null;
+  const adminEmail = adminUser?.email ?? null;
+  if (authError || !isAdminUser(adminUser)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

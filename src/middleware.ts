@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { isAdminEmail } from "@/lib/admin-auth";
+import { isAdminUser } from "@/lib/admin-auth";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const PUBLIC_KEY =
@@ -31,7 +31,7 @@ export async function middleware(req: NextRequest) {
   });
 
   const { data } = await supabase.auth.getUser();
-  if (isAdminEmail(data.user?.email)) return res;
+  if (isAdminUser(data.user)) return res;
 
   const signInUrl = new URL("/signin", req.url);
   signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);

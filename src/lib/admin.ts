@@ -1,18 +1,18 @@
 import { redirect } from "next/navigation";
-import { isAdminEmail } from "@/lib/admin-auth";
+import { isAdminUser } from "@/lib/admin-auth";
 import { supabaseServer } from "@/lib/supabase-server";
 
-export { isAdminEmail } from "@/lib/admin-auth";
+export { isAdminUser } from "@/lib/admin-auth";
 
 export async function requireAdminSession() {
   const supabase = supabaseServer();
   const { data, error } = await supabase.auth.getUser();
   const user = data.user;
 
-  if (error || !user?.email) {
+  if (error || !user) {
     redirect("/signin?callbackUrl=/admin/bookings");
   }
-  if (!isAdminEmail(user.email)) {
+  if (!isAdminUser(user)) {
     redirect("/");
   }
 

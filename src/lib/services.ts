@@ -15,3 +15,4 @@ export const SERVICES = [
 export type ServiceSlug = (typeof SERVICES)[number]["slug"];
 export const getService = (slug: string) => SERVICES.find(s => s.slug === slug);
 export const CATEGORIES = Array.from(new Set(SERVICES.map(s => s.category)));
+export const isPaidServiceSlug = (slug: string) => slug !== "discovery-call";

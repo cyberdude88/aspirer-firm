@@ -2,12 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { getService, isPaidServiceSlug } from "@/lib/services";
 
 type FetchState = "loading" | "ready" | "error";
 
 export default function ServiceBooking() {
   const { service } = useParams<{ service: string }>();
   const router = useRouter();
+  const serviceDef = getService(service);
+  const isPaidService = isPaidServiceSlug(service);
 
   const [slots, setSlots] = useState<string[]>([]);
   const [state, setState] = useState<FetchState>("loading");
@@ -84,26 +87,60 @@ export default function ServiceBooking() {
   const canNext = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1) <= windowEnd;
 
   async function submit() {
-    if (!selectedSlot) return;
+    if (!selectedSlot || !serviceDef) return;
+
     setSubmitting(true);
     setSubmitErr(null);
-    const r = await fetch("/api/bookings", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ slug: service, slot: selectedSlot, name, email, notes }),
-    });
-    const d = await r.json().catch(() => ({}));
+
+    try {
+      if (isPaidService) {
+        const r = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ slug: service, slot: selectedSlot, name, email, notes }),
+        });
+        const d = await r.json().catch(() => ({}));
+
+        if (!r.ok || !d.url) {
+          setSubmitErr(d.error ?? "Could not start checkout");
+          setSubmitting(false);
+          return;
+        }
+
+        window.location.href = d.url;
+        return;
+      }
+
+      const r = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slug: service, slot: selectedSlot, name, email, notes }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        setSubmitErr(d.error ?? "Could not submit");
+        setSubmitting(false);
+        return;
+      }
+
+      router.push(`/booking/requested?slug=${service}`);
+    } catch (error) {
+      setSubmitErr(error instanceof Error ? error.message : "Could not submit");
+      setSubmitting(false);
+      return;
+    }
+
     setSubmitting(false);
-    if (!r.ok) { setSubmitErr(d.error ?? "Could not submit"); return; }
-    router.push(`/booking/requested?slug=${service}`);
   }
 
   return (
     <main className="mx-auto max-w-4xl px-6 pb-20 pt-44 text-[color:var(--text-strong)] md:pt-56">
       <p className="mono text-xs uppercase tracking-widest text-[color:var(--gold)]">Book a session</p>
-      <h1 className="mt-2 text-3xl font-semibold capitalize">{String(service).replaceAll("-", " ")}</h1>
+      <h1 className="mt-2 text-3xl font-semibold">{serviceDef?.title ?? String(service).replaceAll("-", " ")}</h1>
       <p className="mt-3 text-sm text-[color:var(--text-muted)]">
-        Pick a time in the next 90 days. Marie reviews each request and confirms by email.
+        {isPaidService
+          ? "Pick a time, then continue to secure checkout to confirm your engagement."
+          : "Pick a time in the next 90 days. Marie reviews each request and confirms by email."}
       </p>
       <p className="mt-2 text-xs text-[color:var(--text-muted)]">
         Times shown in {timeZone || "your local timezone"}.
@@ -203,7 +240,7 @@ export default function ServiceBooking() {
 
       {state === "ready" && selectedSlot && (
         <section className="mt-12 max-w-xl rounded-xl border border-[color:var(--chrome-border-1)] bg-[color:var(--chrome-bg-2)] p-6 backdrop-blur-md">
-          <h2 className="text-lg font-medium">Request this time</h2>
+          <h2 className="text-lg font-medium">{isPaidService ? "Continue to checkout" : "Request this time"}</h2>
           <p className="mt-1 text-sm text-[color:var(--text-muted)]">
             {new Date(selectedSlot).toLocaleString(undefined, {
               weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit",
@@ -243,7 +280,9 @@ export default function ServiceBooking() {
             disabled={submitting || !name.trim() || !email.trim()}
             className="btn btn-primary mt-5 disabled:opacity-50"
           >
-            {submitting ? "Submitting…" : "Submit request"}
+            {submitting
+              ? (isPaidService ? "Starting checkout…" : "Submitting…")
+              : (isPaidService ? "Continue to secure checkout" : "Submit request")}
             <span className="arr">→</span>
           </button>
         </section>

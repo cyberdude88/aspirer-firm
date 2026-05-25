@@ -28,7 +28,7 @@ Files changed:
 Key behavior now:
 - sign-in uses `supabase.auth.signInWithPassword(...)`
 - `/admin/**` access is based on authenticated Supabase user email
-- allowlist remains server-side via `ADMIN_EMAIL` and `SECONDARY_ADMIN_EMAIL`
+- admin access is determined by Supabase Auth `app_metadata.role = "admin"` or `app_metadata.is_admin = true`
 - the old extra browser-session cookie gate was removed
 
 ### 2. NextAuth credential path removed from code
@@ -86,8 +86,7 @@ Removed local legacy secrets/credential values tied to the old app-managed passw
 - `GOOGLE_REDIRECT_URI`
 
 Retained:
-- `ADMIN_EMAIL`
-- `SECONDARY_ADMIN_EMAIL`
+- Supabase URL / publishable key / service role key
 - Supabase URL / publishable key / service role key
 
 ## Current Working Tree
@@ -129,7 +128,7 @@ Untracked and intentionally not part of repo work:
    - `NEXTAUTH_SECRET`
    - `ADMIN_PASSWORD`
    - credentials provider / username+password in env
-7. Deploy only after confirming the live site should switch to Supabase-backed admin auth.
+7. Remove any now-unused admin email allowlist vars from deployment config after confirming the live site is using Supabase-backed admin auth.
 
 ## Notes About Typecheck / Build
 
