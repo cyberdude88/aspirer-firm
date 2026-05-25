@@ -1,4 +1,4 @@
-import type { User } from "/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
 type AdminLikeUser = Pick<User, "app_metadata"> | null | undefined;
 
