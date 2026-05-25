@@ -98,6 +98,8 @@ export function FloatingBackgroundLogo({
     const el = rootRef.current;
     if (!el) return;
 
+    const isDesktop = window.innerWidth > 820;
+
     let targetY = 0;
     let currentY = 0;
     let rafId: number | null = null;
@@ -105,7 +107,19 @@ export function FloatingBackgroundLogo({
 
     // Smoothing constant: lower = more drag (logo lags more).
     const SMOOTHING = 0.08;
-    const isDesktop = window.innerWidth > 820;
+
+    // Mobile: *progress*-based travel magnitude (always positive). The two
+    // visible copies read this same value but move in OPPOSITE directions
+    // (CSS :nth-child) — copy 1 rises, copy 2 descends — up to 25% of the
+    // viewport height each across the whole scroll. They overlap at the top
+    // (scroll 0) and split apart toward the bottom; because one enters as
+    // the other leaves, the frame stays covered at every depth.
+    const MOBILE_TRAVEL = () => window.innerHeight * 0.25;
+    const scrollProgress = () => {
+      const denom =
+        document.documentElement.scrollHeight - window.innerHeight;
+      return denom > 0 ? Math.min(1, Math.max(0, window.scrollY / denom)) : 0;
+    };
 
     const tick = () => {
       const delta = targetY - currentY;
@@ -121,7 +135,9 @@ export function FloatingBackgroundLogo({
     };
 
     const onScroll = () => {
-      targetY = -window.scrollY * parallax;
+      targetY = isDesktop
+        ? -window.scrollY * parallax
+        : scrollProgress() * MOBILE_TRAVEL();
       if (isDesktop) {
         el.dataset.active = "true";
         if (activeTimeout != null) window.clearTimeout(activeTimeout);

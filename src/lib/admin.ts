@@ -1,17 +1,20 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { isAdminEmail } from "@/lib/admin-auth";
+import { supabaseServer } from "@/lib/supabase-server";
 
 export { isAdminEmail } from "@/lib/admin-auth";
 
 export async function requireAdminSession() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase.auth.getUser();
+  const user = data.user;
+
+  if (error || !user?.email) {
     redirect("/signin?callbackUrl=/admin/bookings");
   }
-  if (!isAdminEmail(session.user.email)) {
+  if (!isAdminEmail(user.email)) {
     redirect("/");
   }
-  return session;
+
+  return user;
 }

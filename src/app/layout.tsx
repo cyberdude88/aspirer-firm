@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   title: "Aspirer Firm — Mindset Coaching for Entrepreneurs",
   description: "Helping founders build unbreakable resilience, overcome self-doubt, and grow with confidence. 1:1 mindset coaching by Marie Cook, Licensed Mental Health Professional.",
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/apple-icon.png",
+    icon: "/aspirer-firm-logo.png",
+    shortcut: "/aspirer-firm-logo.png",
+    apple: "/aspirer-firm-logo.png",
   },
 };
 

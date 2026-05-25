@@ -99,25 +99,25 @@ export default function ServiceBooking() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 pb-20 pt-44 text-white md:pt-56">
+    <main className="mx-auto max-w-4xl px-6 pb-20 pt-44 text-[color:var(--text-strong)] md:pt-56">
       <p className="mono text-xs uppercase tracking-widest text-[color:var(--gold)]">Book a session</p>
       <h1 className="mt-2 text-3xl font-semibold capitalize">{String(service).replaceAll("-", " ")}</h1>
-      <p className="mt-3 text-sm text-white/55">
+      <p className="mt-3 text-sm text-[color:var(--text-muted)]">
         Pick a time in the next 90 days. Marie reviews each request and confirms by email.
       </p>
-      <p className="mt-2 text-xs text-white/40">
+      <p className="mt-2 text-xs text-[color:var(--text-muted)]">
         Times shown in {timeZone || "your local timezone"}.
       </p>
 
       {state === "loading" && (
-        <p className="mt-10 text-white/55" aria-live="polite">
+        <p className="mt-10 text-[color:var(--text-muted)]" aria-live="polite">
           {loadingLabel}
         </p>
       )}
       {state === "error" && err && <p className="mt-10 text-red-400">{err}</p>}
 
       {state === "ready" && (
-        <div className="mt-10 grid gap-10 rounded-2xl border border-white/12 bg-black/60 p-6 backdrop-blur-md md:grid-cols-[1fr_280px] md:p-8">
+        <div className="mt-10 grid gap-10 rounded-2xl border border-[color:var(--chrome-border-1)] bg-[color:var(--chrome-bg-2)] p-6 backdrop-blur-md md:grid-cols-[1fr_280px] md:p-8">
           <section>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium">
@@ -127,17 +127,17 @@ export default function ServiceBooking() {
                 <button
                   onClick={() => canPrev && setViewMonth(prevMonth(viewMonth))}
                   disabled={!canPrev}
-                  className="rounded border border-white/15 px-3 py-1 text-sm hover:border-white/40 disabled:opacity-30"
+                  className="rounded border border-[color:var(--chrome-border-1)] px-3 py-1 text-sm hover:border-[color:var(--chrome-border-3)] disabled:opacity-30"
                 >‹</button>
                 <button
                   onClick={() => canNext && setViewMonth(nextMonth(viewMonth))}
                   disabled={!canNext}
-                  className="rounded border border-white/15 px-3 py-1 text-sm hover:border-white/40 disabled:opacity-30"
+                  className="rounded border border-[color:var(--chrome-border-1)] px-3 py-1 text-sm hover:border-[color:var(--chrome-border-3)] disabled:opacity-30"
                 >›</button>
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[11px] uppercase tracking-widest text-white/40">
+            <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[11px] uppercase tracking-widest text-[color:var(--text-muted)]">
               {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => <div key={d}>{d}</div>)}
             </div>
 
@@ -158,8 +158,8 @@ export default function ServiceBooking() {
                       (isSelected
                         ? "border border-[color:var(--gold)] bg-[color:var(--gold)] text-black shadow-[0_0_0_1px_rgba(212,176,106,0.45),0_0_24px_rgba(212,176,106,0.45)]"
                         : hasSlots
-                          ? "border border-white/15 hover:border-white/50 hover:bg-white/[0.04] text-white"
-                          : "text-white/20 cursor-not-allowed")
+                          ? "border border-[color:var(--chrome-border-1)] hover:border-[color:var(--chrome-border-3)] hover:bg-[color:var(--chrome-bg-1)] text-[color:var(--text-strong)]"
+                          : "text-[color:var(--text-faint)] opacity-60 cursor-not-allowed")
                     }
                   >
                     {cell.getDate()}
@@ -170,7 +170,7 @@ export default function ServiceBooking() {
           </section>
 
           <aside>
-            <h3 className="text-sm uppercase tracking-widest text-white/40 mono">
+            <h3 className="text-sm uppercase tracking-widest text-[color:var(--text-muted)] mono">
               {selectedDay
                 ? new Date(selectedDay).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })
                 : "Pick a date"}
@@ -185,7 +185,7 @@ export default function ServiceBooking() {
                         "w-full rounded border px-2 py-2 text-sm transition duration-200 " +
                         (selectedSlot === iso
                           ? "border-[color:var(--gold)] bg-[color:var(--gold)]/18 text-[color:var(--gold)] shadow-[0_0_0_1px_rgba(212,176,106,0.35),0_0_26px_rgba(212,176,106,0.32)]"
-                          : "border-white/15 text-white hover:border-white/50 hover:bg-white/[0.04]")
+                          : "border-[color:var(--chrome-border-1)] text-[color:var(--text-strong)] hover:border-[color:var(--chrome-border-3)] hover:bg-[color:var(--chrome-bg-1)]")
                       }
                     >
                       {new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
@@ -195,45 +195,45 @@ export default function ServiceBooking() {
               </ul>
             )}
             {selectedDay && (slotsByDay.get(selectedDay)?.length ?? 0) === 0 && (
-              <p className="mt-3 text-sm text-white/40">No times left on this day.</p>
+              <p className="mt-3 text-sm text-[color:var(--text-muted)]">No times left on this day.</p>
             )}
           </aside>
         </div>
       )}
 
       {state === "ready" && selectedSlot && (
-        <section className="mt-12 max-w-xl rounded-xl border border-white/12 bg-black/60 p-6 backdrop-blur-md">
+        <section className="mt-12 max-w-xl rounded-xl border border-[color:var(--chrome-border-1)] bg-[color:var(--chrome-bg-2)] p-6 backdrop-blur-md">
           <h2 className="text-lg font-medium">Request this time</h2>
-          <p className="mt-1 text-sm text-white/55">
+          <p className="mt-1 text-sm text-[color:var(--text-muted)]">
             {new Date(selectedSlot).toLocaleString(undefined, {
               weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit",
             })}
           </p>
           <div className="mt-5 space-y-3">
             <label className="block text-sm">
-              <span className="mono text-xs uppercase tracking-widest text-white/50">Name</span>
+              <span className="mono text-xs uppercase tracking-widest text-[color:var(--text-muted)]">Name</span>
               <input
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="mt-1 w-full rounded border border-white/15 bg-black/40 px-3 py-2 outline-none focus:border-[color:var(--gold)]"
+                className="mt-1 w-full rounded border border-[color:var(--chrome-border-1)] bg-[color:var(--chrome-bg-1)] px-3 py-2 outline-none focus:border-[color:var(--gold)]"
               />
             </label>
             <label className="block text-sm">
-              <span className="mono text-xs uppercase tracking-widest text-white/50">Email</span>
+              <span className="mono text-xs uppercase tracking-widest text-[color:var(--text-muted)]">Email</span>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="mt-1 w-full rounded border border-white/15 bg-black/40 px-3 py-2 outline-none focus:border-[color:var(--gold)]"
+                className="mt-1 w-full rounded border border-[color:var(--chrome-border-1)] bg-[color:var(--chrome-bg-1)] px-3 py-2 outline-none focus:border-[color:var(--gold)]"
               />
             </label>
             <label className="block text-sm">
-              <span className="mono text-xs uppercase tracking-widest text-white/50">Notes (optional)</span>
+              <span className="mono text-xs uppercase tracking-widest text-[color:var(--text-muted)]">Notes (optional)</span>
               <textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded border border-white/15 bg-black/40 px-3 py-2 outline-none focus:border-[color:var(--gold)]"
+                className="mt-1 w-full rounded border border-[color:var(--chrome-border-1)] bg-[color:var(--chrome-bg-1)] px-3 py-2 outline-none focus:border-[color:var(--gold)]"
               />
             </label>
           </div>

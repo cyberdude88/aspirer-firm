@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aspirer Firm — mobile preview</title>
+<style>
+  :root { --w: 393px; --h: 852px; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: #15171b;
+    color: #d8d4cd;
+    font: 14px/1.4 system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 16px 40px;
+    min-height: 100%;
+  }
+  .bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .bar a, .bar button {
+    background: #23262c; color: #e7e3db; border: 1px solid #34383f;
+    border-radius: 8px; padding: 7px 12px; font-size: 13px; cursor: pointer;
+    text-decoration: none; font-family: inherit;
+  }
+  .bar a:hover, .bar button:hover { background: #2c3037; }
+  .bar button.active { background: #c8a96a; color: #1a1a1a; border-color: #c8a96a; }
+  .note { opacity: .6; font-size: 12px; }
+  #dims { font-variant-numeric: tabular-nums; }
+
+  /* Phone bezel sizes itself from --w/--h, so toggling the .landscape
+     class (which swaps them) physically resizes the iframe viewport —
+     the site re-runs its own media queries at the new dimensions. */
+  .phone {
+    width: calc(var(--w) + 24px);
+    height: calc(var(--h) + 24px);
+    background: #0a0a0b;
+    border-radius: 46px;
+    padding: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 0 0 2px #2a2a2e;
+    position: relative;
+    flex: none;
+    transition: width .35s ease, height .35s ease;
+  }
+  .notch {
+    position: absolute; background: #0a0a0b; z-index: 2;
+    top: 16px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 26px; border-radius: 0 0 16px 16px;
+  }
+  .phone.landscape .notch {
+    top: 50%; left: 16px; transform: translateY(-50%);
+    width: 26px; height: 120px; border-radius: 0 16px 16px 0;
+  }
+  .screen {
+    width: var(--w); height: var(--h);
+    border-radius: 36px; overflow: hidden; background: #000;
+    position: relative;
+  }
+  iframe { width: var(--w); height: var(--h); border: 0; display: block; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <strong>Aspirer Firm — mobile preview</strong>
+    <span class="note" id="dims">393 × 852</span>
+    <button id="rotate">⟳ rotate</button>
+    <button id="reload">↻ reload</button>
+    <button id="replay" title="Opens a fresh window — the logo intro plays once per session">▶ replay intro</button>
+    <a href="http://localhost:3000/" target="_blank">open full site ↗</a>
+  </div>
+  <div class="bar" id="routes">
+    <a data-route="/" class="active">/ home</a>
+    <a data-route="/about">/about</a>
+    <a data-route="/resources">/resources</a>
+    <a data-route="/booking">/booking</a>
+  </div>
+  <div class="phone" id="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <iframe id="frame" src="http://localhost:3000/" title="Aspirer Firm mobile"></iframe>
+    </div>
+  </div>
+  <span class="note">Scroll inside the phone. The two logo ghosts diverge (one up, one down). ⟳ rotate to test landscape.</span>
+<script>
+  const frame  = document.getElementById('frame');
+  const phone  = document.getElementById('phone');
+  const dims   = document.getElementById('dims');
+  const rotate = document.getElementById('rotate');
+
+  rotate.onclick = () => {
+    const land = phone.classList.toggle('landscape');
+    document.documentElement.style.setProperty('--w', land ? '852px' : '393px');
+    document.documentElement.style.setProperty('--h', land ? '393px' : '852px');
+    dims.textContent = land ? '852 × 393' : '393 × 852';
+    rotate.classList.toggle('active', land);
+  };
+
+  document.getElementById('reload').onclick = () => { frame.src = frame.src; };
+
+  // The intro is gated to once per browser session (sessionStorage).
+  // A brand-new window is a fresh session for the origin, so the intro
+  // replays there. (Can't clear the iframe's sessionStorage from here —
+  // this page is a different origin than localhost:3000.)
+  document.getElementById('replay').onclick = () =>
+    window.open('http://localhost:3000/', '_blank');
+
+  document.querySelectorAll('#routes a').forEach(a => {
+    a.onclick = (e) => {
+      e.preventDefault();
+      frame.src = 'http://localhost:3000' + a.dataset.route;
+      document.querySelectorAll('#routes a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+    };
+  });
+</script>
+</body>
+</html>

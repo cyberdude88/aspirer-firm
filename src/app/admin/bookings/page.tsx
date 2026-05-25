@@ -1,6 +1,6 @@
 import { requireAdminSession } from "@/lib/admin";
 import { getService } from "@/lib/services";
-import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-server";
 import { DecisionButtons } from "./DecisionButtons";
 
 type BookingRow = {
@@ -78,7 +78,7 @@ export default async function AdminBookingsPage({
         <span className="sec-tag mono">— ADMIN</span>
         <h1 className="sec-title" style={{ marginTop: 18 }}>Booking requests</h1>
         <p style={{ marginTop: 24, color: "var(--mute)", fontSize: 17, lineHeight: 1.65, maxWidth: "60ch" }}>
-          Signed in as {session.user?.email}. Pending requests hold their selected slot until you approve or deny them.
+          Signed in as {session.email}. Pending requests hold their selected slot until you approve or deny them.
         </p>
 
         <nav

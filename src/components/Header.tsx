@@ -16,13 +16,13 @@ export function Header() {
           <span className="brand-line brand-line-sub">FIRM</span>
         </Link>
       </div>
+      <div className="nav-links">
+        <Link href="/#approach">Approach</Link>
+        <Link href="/#services">Services</Link>
+        <Link href="/#voices">Voices</Link>
+        <AboutNavLink>About</AboutNavLink>
+      </div>
       <div className="nav-row">
-        <div className="nav-links">
-          <Link href="/#approach">Approach</Link>
-          <Link href="/#services">Services</Link>
-          <Link href="/#voices">Voices</Link>
-          <AboutNavLink>About</AboutNavLink>
-        </div>
         <Link href="/booking/discovery-call" className="nav-cta">Book a Call</Link>
         <ThemeToggle />
       </div>

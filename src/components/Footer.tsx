@@ -36,13 +36,24 @@ export function Footer() {
         </div>
       </div>
       <div className="foot-bottom mono">
-        <span>© {new Date().getFullYear()} ASPIRER FIRM. ALL RIGHTS RESERVED.</span>
+        <span>© {new Date().getFullYear()} ALEX ANSBERGS. ALL RIGHTS RESERVED.</span>
         <div className="foot-legal-links" aria-label="Legal documents">
           <Link href="/privacy" className="foot-legal-link">Privacy</Link>
           <Link href="/terms" className="foot-legal-link">Terms</Link>
           <Link href="/confidentiality" className="foot-legal-link">Confidentiality</Link>
         </div>
       </div>
+      <p className="foot-credit mono">
+        Designed &amp; built by{" "}
+        <a
+          className="foot-credit-link"
+          href="https://www.linkedin.com/in/alex-ansbergs"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ALEX ANSBERGS
+        </a>
+      </p>
     </footer>
   );
 }

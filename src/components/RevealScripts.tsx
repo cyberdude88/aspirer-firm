@@ -10,18 +10,65 @@ import { usePathname } from "next/navigation";
 export function RevealScripts() {
   const pathname = usePathname();
   useEffect(() => {
+    let hashScrollFrame = 0;
     const nav = document.getElementById("nav");
     const onScroll = () => nav?.classList.toggle("scrolled", window.scrollY > 12);
     document.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
+    const scrollToHashTarget = () => {
+      if (!window.location.hash) return;
+
+      const targetId = decodeURIComponent(window.location.hash.slice(1));
+      if (!targetId) return;
+
+      let attempts = 0;
+      const tryScroll = () => {
+        const target = document.getElementById(targetId);
+        if (target) {
+          target.scrollIntoView({ block: "start" });
+          return;
+        }
+
+        if (attempts < 12) {
+          attempts += 1;
+          hashScrollFrame = window.requestAnimationFrame(tryScroll);
+        }
+      };
+
+      hashScrollFrame = window.requestAnimationFrame(tryScroll);
+    };
+
+    window.addEventListener("hashchange", scrollToHashTarget);
+    scrollToHashTarget();
+
     // Publish the actual fixed-nav height so scroll-padding-top /
     // scroll-margin-top stay correct as the nav resizes (logo swap,
     // scrolled-state shrink, viewport change). Without this anchor
     // links overshoot or undershoot the section header.
+    const getClipInsetBottom = (el: HTMLElement) => {
+      const clipPath = window.getComputedStyle(el).clipPath;
+      const match = clipPath.match(/^inset\((.+)\)$/);
+      if (!match) return 0;
+
+      const parts = match[1]
+        .trim()
+        .split(/\s+/)
+        .map(token => Number.parseFloat(token))
+        .filter(value => Number.isFinite(value));
+
+      if (parts.length === 0) return 0;
+      if (parts.length === 1) return parts[0];
+      if (parts.length === 2) return parts[0];
+      if (parts.length === 3) return parts[2];
+      return parts[2];
+    };
+
     const setNavH = () => {
       if (!nav) return;
-      const h = Math.round(nav.getBoundingClientRect().height);
+      const rawH = nav.getBoundingClientRect().height;
+      const clippedBottom = getClipInsetBottom(nav);
+      const h = Math.round(Math.max(0, rawH - clippedBottom));
       document.documentElement.style.setProperty("--nav-h", `${h}px`);
     };
     setNavH();
@@ -103,7 +150,9 @@ export function RevealScripts() {
 
     return () => {
       document.removeEventListener("scroll", onScroll);
+      window.removeEventListener("hashchange", scrollToHashTarget);
       window.removeEventListener("resize", setNavH);
+      window.cancelAnimationFrame(hashScrollFrame);
       window.cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();

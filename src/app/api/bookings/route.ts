@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getService } from "@/lib/services";
-import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-server";
 import { bookingWindow, generateSlots, listActiveBookings } from "@/lib/booking";
 
 export const dynamic = "force-dynamic";

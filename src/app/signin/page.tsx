@@ -1,9 +1,10 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useTransition } from "react";
 import { FIRM } from "@/lib/firm";
+import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export default function SignInPage() {
   return (
@@ -19,27 +20,25 @@ function SignInForm() {
   const callbackUrl = searchParams.get("callbackUrl") || "/admin/bookings";
   const initialError = searchParams.get("error");
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(initialError ? "Username and/or password incorrect." : null);
+  const [error, setError] = useState<string | null>(initialError ? "Email and/or password incorrect." : null);
   const [pending, startTransition] = useTransition();
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     startTransition(async () => {
-      const res = await signIn("admin-password", {
-        username,
+      const supabase = supabaseBrowser();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
         password,
-        redirect: false,
-        callbackUrl,
       });
-      if (!res || res.error) {
-        setError("Username and/or password incorrect.");
+      if (signInError) {
+        setError("Email and/or password incorrect.");
         return;
       }
-      await fetch("/api/admin/session", { method: "POST" });
-      router.push(res.url ?? callbackUrl);
+      router.push(callbackUrl);
       router.refresh();
     });
   }
@@ -49,27 +48,27 @@ function SignInForm() {
       <div className="wrap" style={{ maxWidth: 1120 }}>
         <div className="cta-card reveal in" style={{ textAlign: "left" }}>
           <div className="inside" style={{ maxWidth: 560 }}>
-            <span className="sec-tag mono" style={{ display: "inline-flex" }}>— ADMIN ACCESS</span>
+            <span className="sec-tag mono" style={{ display: "inline-flex" }}>- ADMIN ACCESS</span>
             <h1 style={{ marginTop: 18, fontSize: "clamp(32px,4.4vw,56px)", lineHeight: 1.04, letterSpacing: "-.02em" }}>
               Sign in to manage booking requests.
             </h1>
             <p style={{ marginTop: 18, maxWidth: "50ch", color: "var(--mute)", fontSize: 15, lineHeight: 1.65 }}>
-              Enter the admin password to access the {FIRM.name} booking queue.
+              Enter the admin email and password to access the {FIRM.name} booking queue.
             </p>
 
             <form onSubmit={submit} style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14, maxWidth: 380 }}>
               <label className="mono" style={{ fontSize: 11, letterSpacing: ".18em", color: "var(--mute)" }}>
-                USERNAME
+                EMAIL
               </label>
               <input
-                type="text"
+                type="email"
                 autoFocus
                 required
-                autoComplete="username"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
+                autoComplete="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 disabled={pending}
-                placeholder="Username"
+                placeholder="admin@example.com"
                 style={{
                   padding: "14px 16px",
                   borderRadius: 12,
@@ -106,9 +105,9 @@ function SignInForm() {
               ) : null}
               <div style={{ marginTop: 8, display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <button type="submit" disabled={pending} className="btn btn-primary" style={{ opacity: pending ? 0.6 : 1 }}>
-                  {pending ? "Signing in…" : "Sign in"} <span className="arr">→</span>
+                  {pending ? "Signing in..." : "Sign in"} <span className="arr">{"->"}</span>
                 </button>
-                <a href="/" className="btn btn-ghost">Back to site</a>
+                <Link href="/" className="btn btn-ghost">Back to site</Link>
               </div>
             </form>
 

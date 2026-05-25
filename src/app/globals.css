@@ -64,7 +64,7 @@ html.lenis,html.lenis body{height:auto}
 html.lenis.lenis-smooth{scroll-behavior:auto !important}
 html.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
 html.lenis.lenis-stopped{overflow:hidden}
-body{font-weight:400;line-height:1.5}
+body{font-weight:400;line-height:1.5;overflow-x:clip}
 .site-shell{position:relative;z-index:1}
 a{color:inherit;text-decoration:none}
 img,svg{display:block;max-width:100%}
@@ -173,25 +173,37 @@ html:not([data-intro="done"]) .ambient-mesh{
    820px so the page renders smoothly without losing the visual
    character. */
 @media (max-width: 820px){
-  /* Mobile keeps a short layered logo trail so the shaded depth remains,
-     but we cap it at 3 copies instead of the full desktop stack. */
-  .floating-bg__mark:nth-child(n+4){display:none}
-  .floating-bg__mark{
+  /* Mobile: two ghost copies that overlap at the top and DIVERGE on scroll
+     — copy 1 rises, copy 2 descends. Selectors are scoped under
+     `.floating-bg` (specificity 0,2,x) so they beat the LATER desktop
+     `.floating-bg__mark` base rule; with equal specificity source order
+     would otherwise win and re-apply the big desktop fb-drift orbit, which
+     masked the split and stopped the copies overlapping cleanly at top.
+       - n+3 → keep 2 copies; both centered at scroll 0 (perfect overlap).
+       - --fb-scroll-y is JS-driven & progress-based (0 → 25vh, positive).
+         Copy 1 subtracts it (up), copy 2 adds it (down). clamp = safety.
+       - Ambient fb-drift is dropped on mobile so the up/down split reads
+         cleanly; a subtle fb-breathe keeps it from being 100% static. */
+  .floating-bg .floating-bg__mark:nth-child(n+3){display:none}
+  .floating-bg .floating-bg__mark{
     inset:50% auto auto 50%;
     width:clamp(640px, 205vw, 980px);
-    translate:-50% calc(-50% + clamp(-130px, var(--fb-scroll-y, 0px), 130px));
-    filter:blur(1px) saturate(0) brightness(0.82) contrast(0.94);
-    animation-name:fb-drift-mobile, fb-breathe;
+    translate:-50% -50%;
+    filter:saturate(0) brightness(0.82) contrast(0.94);
+    animation:fb-breathe 40s ease-in-out infinite alternate;
+  }
+  .floating-bg .floating-bg__mark:nth-child(1){
+    translate:-50% calc(-50% - clamp(0px, var(--fb-scroll-y, 0px), 25vh));
+  }
+  .floating-bg .floating-bg__mark:nth-child(2){
+    translate:-50% calc(-50% + clamp(0px, var(--fb-scroll-y, 0px), 25vh));
   }
 
-  .nav{
-    backdrop-filter:none;
-    -webkit-backdrop-filter:none;
-    background:rgba(8,8,8,.82);
-  }
-  .nav.scrolled{background:rgba(6,6,6,.92)}
-  html[data-theme="light"] .nav{background:rgba(244,241,236,.86)}
-  html[data-theme="light"] .nav.scrolled{background:rgba(244,241,236,.95)}
+  /* Portrait inherits the base translucent background + backdrop-filter
+     blur (same as desktop and landscape phones, which clear the 820px
+     width and never hit this block). The old near-opaque/no-blur override
+     was dropped so the dynamic blurred bar reads identically in every
+     orientation. */
 
   .ambient-mesh{display:block}
   .ambient-mesh__inner,
@@ -271,31 +283,8 @@ html:not([data-intro="done"]) .ambient-mesh{
   filter:blur(48px);
 }
 
-.slashes{
-  position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
-}
-.slash{
-  position:absolute;
-  width:min(92vw, 980px);
-  aspect-ratio:590 / 527;
-  background:url("/brand/logo-slash-3.png") center / contain no-repeat;
-  filter:blur(.35px);
-  transform:translate3d(0,0,0);
-  mix-blend-mode:screen;
-}
-.slash.s1{top:9%;left:44%;opacity:.11}
-.slash.s2{top:29%;left:-8%;opacity:.07}
-.slash.s3{top:49%;left:38%;opacity:.1}
-.slash.s4{top:69%;left:2%;opacity:.055}
-.slash.s5{top:84%;left:34%;opacity:.085}
-@media (max-width:820px){
-  .slash{width:115vw}
-  .slash.s1{top:15%;left:28%;opacity:.1}
-  .slash.s2{top:34%;left:-26%;opacity:.065}
-  .slash.s3{top:54%;left:20%;opacity:.085}
-  .slash.s4{top:73%;left:-14%;opacity:.05}
-  .slash.s5{top:88%;left:14%;opacity:.075}
-}
+/* (Removed dead .slashes/.slash layer — never mounted in the DOM on any
+   route. Was decorative-only CSS referencing /brand/logo-slash-3.png.) */
 @keyframes mirrorPulse{
   0%{transform:scale(1.08) translateY(-1.5%)}
   100%{transform:scale(1.12) translateY(1.5%)}
@@ -311,6 +300,14 @@ html:not([data-intro="done"]) .ambient-mesh{
    background system instead of the original 18s/26s. */
 .stage-bg::before{animation-duration:62s}
 .stage-bg::after{animation-duration:90s}
+
+/* Visually-hidden but screen-reader-accessible. position:absolute keeps it
+   out of grid/flex flow (otherwise the nav's hidden label auto-placed into
+   the empty left column). */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
 
 /* ---------- NAV ---------- */
 .nav{
@@ -344,11 +341,15 @@ html:not([data-intro="done"]) .ambient-mesh{
 .brand-line{display:block}
 .brand-line-main{font-weight:500;letter-spacing:.22em;font-size:19px;text-indent:.22em}
 .brand-line-sub{font-weight:700;letter-spacing:.42em;font-size:13px;color:var(--text-strong);margin-top:6px;text-indent:.42em}
-.brand-word-hero{margin-left:0}
+.brand-word-hero{margin-left:0;overflow:visible}
 .brand-word-hero .brand-line-main{font-size:55px;letter-spacing:.24em;font-weight:600}
 .brand-word-hero .brand-line-sub{font-size:96px;letter-spacing:.34em;margin-top:6px;font-weight:800;line-height:.9}
 .brand-word-hero .brand-line{
-  --tx:-180px;
+  /* Full-width sweep: the two words fly in from opposite screen edges and
+     overlap mid-flight before settling. Applied to ALL viewports (was a
+     landscape-only effect). body{overflow-x:clip} stops the off-screen
+     travel from spawning a horizontal scrollbar. */
+  --tx:-88vw;
   opacity:0;transform:translateX(var(--tx));
   /* Paused by default so the slide doesn't play behind the intro overlay.
      The slide-in is un-paused when html[data-intro] flips to "morphing"
@@ -356,7 +357,7 @@ html:not([data-intro="done"]) .ambient-mesh{
   animation:brand-slide-in 4.4s cubic-bezier(.16,.84,.22,1) forwards;
   animation-play-state:paused;
 }
-.brand-word-hero .brand-line-sub{--tx:180px}
+.brand-word-hero .brand-line-sub{--tx:88vw}
 /* Run the slide-in alongside the logo's FLIP morph, so the words arrive
    as the logo slides into its header slot. Also runs when the intro is
    skipped entirely (replay or reduced-motion → data-intro="done"). */
@@ -373,11 +374,17 @@ html[data-intro="done"] .brand-word-hero .brand-line{
   92%{opacity:1;filter:blur(.15px)}
   100%{opacity:1;transform:translateX(0);filter:blur(0)}
 }
-.nav-links{display:flex;align-items:center;gap:38px}
-.nav-links a{font-size:13px;color:var(--text-soft);transition:color .25s ease;position:relative}
-.nav-links a:hover{color:var(--text-strong)}
-.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
-.nav-links a:hover::after{transform:scaleX(1)}
+.nav-links{display:flex;align-items:center;gap:14px}
+/* Section links echo the Book-a-Call pill shape but read as secondary:
+   smaller, transparent fill, muted text, hairline border. */
+.nav-links a{
+  font-size:13px;color:var(--text-soft);position:relative;
+  padding:6px 14px;border:1px solid var(--chrome-border-1);border-radius:999px;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:500;background:transparent;
+  transition:background .25s ease,border-color .25s ease,color .25s ease;
+}
+.nav-links a:hover{color:var(--text-strong);background:var(--chrome-bg-2);border-color:var(--chrome-border-2)}
+.nav-links a::after{display:none}
 .nav-cta{
   padding:11px 22px;border:1px solid var(--chrome-border-2);border-radius:999px;
   font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;
@@ -416,8 +423,8 @@ html[data-intro="done"] .brand-word-hero .brand-line{
      half a scrollbar. */
   html{scrollbar-width:none}
   html::-webkit-scrollbar{display:none}
-  .nav{padding:10px 16px 12px;gap:10px}
-  .nav.scrolled{padding:6px 16px 10px;gap:6px}
+  .nav{padding:10px 16px 12px;gap:10px;overflow:hidden;clip-path:inset(0 0 14px 0)}
+  .nav.scrolled{padding:6px 16px 10px;gap:6px;clip-path:inset(0 0 14px 0)}
   .brand{
     flex-direction:row;
     align-items:center;
@@ -435,7 +442,8 @@ html[data-intro="done"] .brand-word-hero .brand-line{
   .brand-line-sub{font-size:13px;letter-spacing:.34em;margin-top:3px}
   .brand-word-hero .brand-line-main{font-size:clamp(20px,6vw,30px);letter-spacing:.16em}
   .brand-word-hero .brand-line-sub{font-size:clamp(32px,9vw,46px);letter-spacing:.18em;margin-top:1px;line-height:.9}
-  .brand-word-hero .brand-line{--tx:0}
+  /* (Portrait used to disable the slide with --tx:0; removed so portrait
+     also gets the global ±88vw sweep.) */
   /* nav-row wraps: links take their own full-width line (all four
      visible, centered), the CTA + theme toggle wrap to a second line. */
   .nav-row{
@@ -447,7 +455,6 @@ html[data-intro="done"] .brand-word-hero .brand-line{
     gap:10px 16px;
   }
   .nav-links{
-    order:1;
     width:100%;
     display:flex;
     flex-wrap:nowrap;
@@ -469,19 +476,151 @@ html[data-intro="done"] .brand-word-hero .brand-line{
 /* Short viewports (landscape phones): the hero's big top padding + tall
    min-height push the title off-screen. Shrink both, and size the title
    to the available height so it never clips. */
-@media (max-height:560px) and (orientation:landscape){
-  .hero{padding-top:96px;padding-bottom:32px;min-height:0}
-  .hero h1{font-size:clamp(24px,6.4vh,52px);margin-top:14px}
-  .hero-sub{margin-top:12px;font-size:14px;line-height:1.45}
-  .hero-meta{margin-top:18px}
-  .hero-actions{margin-top:18px}
+@media (max-height:560px) and (orientation:landscape), (min-width:821px){
+  /* Shared by short landscape phones AND desktop (≥821px). Single bar: logo
+     + wordmark CENTERED, Book-a-Call CTA + theme toggle pinned right, and the
+     section links (Approach/…/About) lifted out to float just above the
+     hero's bottom edge. A 3-col grid (1fr auto 1fr) keeps the wordmark
+     optically centered regardless of the right-side controls. The phone-sized
+     type/logo here are scaled UP for desktop in the (min-width:821px) and
+     (min-height:561px) refinement block below — short landscape phones
+     (height < 561) keep these compact values. */
+  .nav{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:start;
+    padding:6px 16px 0;gap:8px;overflow:hidden;
+  }
+  .nav.scrolled{padding:4px 16px 0;gap:8px}
+
+  /* Centered logo + wordmark group. */
+  .brand{grid-column:2;justify-self:center;flex-direction:row;align-items:center;gap:10px;min-width:0}
+  .brand-word,.brand-word-hero{overflow:visible}
+  /* Shrink the header mark: the @container query sizes it ~106px wide
+     (~95px tall) at this nav width, which alone made the bar ~100px tall
+     and pushed the eyebrow/tagline up under it. Pin it slim here. */
+  .nav .logo-reveal{
+    --lr-width:52px;
+    -webkit-box-reflect:below 3px linear-gradient(rgba(0,0,0,.35), transparent 72%);
+  }
+  .brand-word-hero{flex-direction:row;align-items:baseline;gap:.3em;margin-left:0}
+  /* Thicker, beveled gold wordmark: gradient gold face (clipped to text) +
+     a two-layer drop-shadow extrude (light top edge, dark depth below). */
+  .brand-word-hero{
+    /* Reflector pool: mirror the title (glow and all) below it, brightest
+       right under the letters and fading to nothing — like water. */
+    -webkit-box-reflect:below 3px linear-gradient(rgba(0,0,0,.35), transparent 72%);
+  }
+  .brand-word-hero .brand-line-main,
+  .brand-word-hero .brand-line-sub{
+    font-size:clamp(30px,10.25vh,52px);font-weight:900;letter-spacing:.15em;
+    line-height:1;margin-top:0;
+    /* Neon-sign glow: white halo. Pops against the dark night theme;
+       on the light day theme the letters stay black and the white glow
+       falls away (a white halo can't read on a light ground). */
+    color:var(--text-strong);
+    text-shadow:
+      0 0 4px rgba(255,255,255,.9),
+      0 0 11px rgba(255,255,255,.68),
+      0 0 24px rgba(255,255,255,.48),
+      0 0 44px rgba(255,255,255,.3);
+  }
+  html[data-theme="light"] .brand-word-hero .brand-line-main,
+  html[data-theme="light"] .brand-word-hero .brand-line-sub{
+    color:#0a0a0a;
+    background:none;
+    -webkit-background-clip:initial;background-clip:border-box;
+    text-shadow:1px 0 0 rgba(255,255,255,.98), 2px 0 0 rgba(255,255,255,.72), 3px 0 0 rgba(255,255,255,.36), -1px 1px 0 rgba(0,0,0,.34), -2px 2px 0 rgba(0,0,0,.22), -3px 3px 8px rgba(0,0,0,.22);
+  }
+
+  /* CTA + theme toggle hug the right, vertically centered on the ASPIRER FIRM
+     wordmark (the grid is top-aligned for the pills, so re-center this group). */
+  .nav-row{grid-column:3;justify-self:end;align-self:start;flex:0 0 auto;width:auto;justify-content:flex-end;flex-wrap:nowrap;gap:6px 10px;transform:translateY(-44px)}
+  .nav-cta{padding:5px 11px;font-size:9px}
+  .theme-toggle{width:30px;height:30px;min-width:30px;min-height:30px}
+  .theme-toggle svg{width:16px;height:16px}
+
+  /* Section links: compact 2×2 cluster pinned to the FAR LEFT of the bar
+     (justify-self:start). The 2×2 keeps the four pills within the bar's
+     height instead of a long row. */
+  .nav-links{
+    grid-column:1;justify-self:start;align-self:start;position:static;
+    display:grid;grid-template-columns:auto auto;align-content:center;justify-items:start;
+    gap:4px 6px;width:auto;padding:0;margin:0;transform:translateY(-44px);
+  }
+  .nav-links a{font-size:9px;letter-spacing:.05em;white-space:nowrap;padding:3px 8px}
+
+  /* Hero fills the landscape viewport so its bottom edge lines up with the
+     floating links; content tops out under the bar (not vertically centered).
+     Secondary hero bits are hidden so the first screen reads cleanly:
+     eyebrow + tagline + bottom links. (section.hero out-specifies the base
+     .hero rules that live later in the file — see git history of this block.) */
+  section.hero{padding-top:64px;padding-bottom:54px;min-height:100svh;align-items:stretch}
+  /* Column hero so the eyebrow can be re-ordered to the BOTTOM: tagline +
+     subhead sit up top under the bar, the LICENSED… credential floats down
+     into the empty space below the statement (margin-top:auto), staying
+     clear of the bottom links via the hero's padding-bottom. */
+  .hero .hero-inner{display:flex;flex-direction:column;align-items:center}
+  section.hero h1{font-size:clamp(24px,6.4vh,52px);margin-top:38px}
+  .hero .hero-sub{margin-top:32px;font-size:14px;line-height:1.45}
+  .hero .hero-eyebrow{order:2;margin-top:auto}
+  .hero .hero-meta,
+  .hero .hero-actions,
+  .hero .hero-section-nav,
+  .hero .hero-scroll{display:none}
+}
+
+@media (max-height:560px) and (max-width:820px) and (orientation:landscape){
+  .nav{padding:2px 16px 0;gap:4px;border-bottom-color:transparent;overflow:visible;clip-path:inset(0 0 28px 0)}
+  .nav.scrolled{padding:1px 16px 0;gap:4px;clip-path:inset(0 0 28px 0)}
+  .nav::after{content:"";position:absolute;left:0;right:0;bottom:28px;height:1px;background:var(--line);pointer-events:none}
+}
+
+/* Desktop refinement: same layout as landscape, scaled up for the big
+   canvas. min-height:561px excludes short landscape phones (which keep the
+   compact phone sizes above). Same selectors as the shared block, placed
+   later → these win on desktop via source order. */
+@media (min-width:821px) and (min-height:561px){
+  .nav{padding:10px 36px 0;gap:12px;overflow:hidden;clip-path:inset(0 0 18px 0)}
+  .nav.scrolled{padding:7px 36px 0;gap:12px;clip-path:inset(0 0 18px 0)}
+
+  /* Bigger centered logo + wordmark. */
+  .nav .logo-reveal{
+    --lr-width:clamp(64px,5.4vw,96px);
+    -webkit-box-reflect:below 6px linear-gradient(rgba(0,0,0,.4), transparent 70%);
+  }
+  .brand-word-hero .brand-line-main,
+  .brand-word-hero .brand-line-sub{
+    font-size:clamp(40px,4.6vw,86px);
+    /* Wider white neon halo to match the larger letters. */
+    text-shadow:
+      0 0 6px rgba(255,255,255,.9),
+      0 0 16px rgba(255,255,255,.7),
+      0 0 34px rgba(255,255,255,.5),
+      0 0 64px rgba(255,255,255,.3);
+  }
+  .brand-word-hero{
+    -webkit-box-reflect:below 6px linear-gradient(rgba(0,0,0,.4), transparent 70%);
+  }
+
+  /* Right-side controls back to normal desktop sizing. */
+  .nav-row{transform:translateY(-60px)}
+  .nav-cta{padding:11px 22px;font-size:13px}
+  .theme-toggle{width:44px;height:44px;min-width:44px;min-height:44px}
+  .theme-toggle svg{width:22px;height:22px}
+
+  /* Section links: 2×2 cluster left of the logo, slightly larger pills. */
+  .nav-links{gap:8px 10px;transform:translateY(-60px)}
+  .nav-links a{font-size:11px;letter-spacing:.08em;padding:5px 12px}
+
+  /* Hero: clears the taller bar, statement up top, eyebrow floated below. */
+  section.hero{padding-top:clamp(112px,13vh,156px);padding-bottom:96px}
+  section.hero h1{font-size:clamp(30px,3vw,56px);margin-top:20px;max-width:20ch}
+  .hero .hero-sub{margin-top:18px;font-size:clamp(15px,1.2vw,19px);line-height:1.6;max-width:62ch}
 }
 
 /* ---------- HERO ---------- */
 .hero{
   position:relative;min-height:78vh;min-height:78svh;display:flex;align-items:center;justify-content:center;
   padding:220px 36px 60px;
-  overflow:hidden;
   isolation:isolate;
 }
 .hero::before,
@@ -971,7 +1110,12 @@ section{position:relative}
     width: 100%;
     height: 100%;
     overflow: visible;
-    filter: brightness(1);
+    filter:
+      brightness(1.12)
+      drop-shadow(0 0 4px rgba(255,255,255,.92))
+      drop-shadow(0 0 10px rgba(255,255,255,.68))
+      drop-shadow(0 0 22px rgba(255,255,255,.42))
+      drop-shadow(0 0 38px rgba(255,255,255,.24));
   }
   .logo-reveal__wipe {
     transform-box: fill-box;
@@ -1127,31 +1271,41 @@ html[data-glow="done"] .nav .logo-reveal .logo-reveal__strokes {
     filter:
       brightness(1)
       drop-shadow(0 0 0 rgba(255,255,255,0))
+      drop-shadow(0 0 0 rgba(255,255,255,0))
+      drop-shadow(0 0 0 rgba(255,255,255,0))
       drop-shadow(0 0 0 rgba(255,255,255,0));
   }
   16% {
     filter:
-      brightness(1.24)
-      drop-shadow(0 0 3px rgba(255,255,255,.58))
-      drop-shadow(0 0 8px rgba(255,255,255,.3));
+      brightness(1.28)
+      drop-shadow(0 0 3px rgba(255,255,255,.62))
+      drop-shadow(0 0 8px rgba(255,255,255,.36))
+      drop-shadow(0 0 18px rgba(255,255,255,.2))
+      drop-shadow(0 0 30px rgba(255,255,255,.1));
   }
   34% {
     filter:
-      brightness(1.6)
-      drop-shadow(0 0 7px rgba(255,255,255,.97))
-      drop-shadow(0 0 18px rgba(255,255,255,.55));
+      brightness(1.62)
+      drop-shadow(0 0 8px rgba(255,255,255,.98))
+      drop-shadow(0 0 18px rgba(255,255,255,.62))
+      drop-shadow(0 0 34px rgba(255,255,255,.34))
+      drop-shadow(0 0 54px rgba(255,255,255,.18));
   }
   52% {
     filter:
-      brightness(1.34)
-      drop-shadow(0 0 5px rgba(255,255,255,.65))
-      drop-shadow(0 0 12px rgba(255,255,255,.36));
+      brightness(1.36)
+      drop-shadow(0 0 6px rgba(255,255,255,.72))
+      drop-shadow(0 0 14px rgba(255,255,255,.42))
+      drop-shadow(0 0 28px rgba(255,255,255,.24))
+      drop-shadow(0 0 44px rgba(255,255,255,.12));
   }
   100% {
     filter:
-      brightness(1)
-      drop-shadow(0 0 0 rgba(255,255,255,0))
-      drop-shadow(0 0 0 rgba(255,255,255,0));
+      brightness(1.12)
+      drop-shadow(0 0 4px rgba(255,255,255,.92))
+      drop-shadow(0 0 10px rgba(255,255,255,.68))
+      drop-shadow(0 0 22px rgba(255,255,255,.42))
+      drop-shadow(0 0 38px rgba(255,255,255,.24));
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1282,7 +1436,7 @@ html[data-glow="done"] .nav .logo-reveal .logo-reveal__strokes {
    They stack cleanly without overwriting each other.
 
    Stacking — z-index: -1 puts this alongside the other ambient
-   layers (.stage-glow, .slashes). Normal in-flow content has
+   layers (.stage-glow). Normal in-flow content has
    no z-index and paints above z-index:-1 fixed elements.
 
    Tunable per-instance via inline style:
@@ -1683,14 +1837,18 @@ html[data-theme="light"] .stage-glow::after{
 /* Grain — soft-light against paper still works but is subtler. */
 html[data-theme="light"] .stage-grain{opacity:.06;mix-blend-mode:multiply}
 
-/* Decorative ambient slashes — switch from screen (lift) to multiply
-   so the white strokes read as dark accents on paper. */
-html[data-theme="light"] .slash{mix-blend-mode:multiply;filter:blur(.35px) invert(1)}
-
 /* Inline header LogoMark strokes — flip white→dark on paper. Applied to
    the SVG <image> children so the parent's drop-shadow + flash filter
    compose on top of the already-inverted bitmap. */
 html[data-theme="light"] .logo-reveal__strokes image{filter:invert(1)}
+html[data-theme="light"] .brand-word-hero .brand-line-main,
+html[data-theme="light"] .brand-word-hero .brand-line-sub{
+  color:#0a0a0a;
+  background:none;
+  -webkit-background-clip:initial;background-clip:border-box;
+  text-shadow:1px 0 0 rgba(255,255,255,.98), 2px 0 0 rgba(255,255,255,.72), 3px 0 0 rgba(255,255,255,.36), -1px 1px 0 rgba(0,0,0,.34), -2px 2px 0 rgba(0,0,0,.22), -3px 3px 8px rgba(0,0,0,.22);
+}
+
 
 /* Hero backdrop pseudos — replace dark scrim with a paper-tone wash. */
 html[data-theme="light"] .hero::before{
