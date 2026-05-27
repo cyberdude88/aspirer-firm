@@ -41,7 +41,7 @@ Deleted:
 
 Note:
 - `next-auth` still remains in `package.json` right now and likely should be removed once the build is fully validated and no remaining docs/code references need it
-- `src/lib/auth-secret.ts` was identified as stale legacy auth infrastructure and should likely be removed if no remaining imports exist
+- stale legacy auth infrastructure was identified and has since been removed
 
 ### 3. Supabase helper split to fix `next/headers` build error
 
@@ -70,10 +70,7 @@ Important note:
 ### 5. Supabase Auth users created
 
 Using the project service role, these users were created in Supabase Auth:
-- `admin@aspirerfirm.com`
-- `marie.cook@aspirerfirm.com`
-
-`marie.cook@aspirerfirm.com` was reset to a new temporary password during this session.
+- admin users were created in Supabase Auth and their admin role now lives in `app_metadata`.
 
 ### 6. Local `.env.local` cleaned
 
@@ -122,12 +119,8 @@ Untracked and intentionally not part of repo work:
 2. If build passes, run through `/signin` and `/admin/bookings` locally.
 3. Remove any stale references to NextAuth from docs and package metadata.
 4. Consider removing `next-auth` from `package.json` and lockfile if no longer used anywhere.
-5. Consider removing `src/lib/auth-secret.ts` if now unused.
-6. Update docs that still mention:
-   - `NEXTAUTH_URL`
-   - `NEXTAUTH_SECRET`
-   - `ADMIN_PASSWORD`
-   - credentials provider / username+password in env
+5. Legacy auth-secret helpers have been removed.
+6. Update docs that still mention removed credential-provider-era env vars or old auth flow details
 7. Remove any now-unused admin email allowlist vars from deployment config after confirming the live site is using Supabase-backed admin auth.
 
 ## Notes About Typecheck / Build

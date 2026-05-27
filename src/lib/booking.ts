@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "./supabase";
+import { supabaseAdmin } from "./supabase-server";
 
 export const BUSINESS_TZ = process.env.BUSINESS_TZ || "Europe/Berlin";
 export const BOOKING_WINDOW_DAYS = 90;

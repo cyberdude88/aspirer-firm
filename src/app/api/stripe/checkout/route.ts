@@ -1,21 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getStripe, PRICE_BY_SLUG } from "@/lib/stripe";
 import { getService, isPaidServiceSlug } from "@/lib/services";
+import { assertSameOrigin, getSiteOrigin, jsonNoStore } from "@/lib/security";
 
 export async function POST(req: NextRequest) {
+  const blocked = assertSameOrigin(req);
+  if (blocked) return blocked;
+
   const { slug, slot, name, email, notes } = await req.json();
   const service = getService(slug);
   const priceId = PRICE_BY_SLUG[slug];
 
   if (!service || !isPaidServiceSlug(slug) || !priceId) {
-    return NextResponse.json({ error: "unknown service or unpriced" }, { status: 400 });
+    return jsonNoStore({ error: "unknown service or unpriced" }, { status: 400 });
   }
 
   if (!slot || !email) {
-    return NextResponse.json({ error: "slot and email are required" }, { status: 400 });
+    return jsonNoStore({ error: "slot and email are required" }, { status: 400 });
   }
 
-  const origin = req.headers.get("origin") ?? "http://localhost:3000";
+  const origin = getSiteOrigin(req);
   const session = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: [{ price: priceId, quantity: 1 }],
@@ -31,5 +35,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ url: session.url });
+  return jsonNoStore({ url: session.url });
 }
